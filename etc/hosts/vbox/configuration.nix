@@ -75,6 +75,7 @@
       ];
     };
   };
+  services.displayManager.autoLogin.user = "agent";
 
   services.wstunnel.enable = true;
   services.wstunnel.clients.link = {

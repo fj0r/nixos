@@ -3,6 +3,7 @@
     - [ ] rime-wubi
 - plasma
     - [ ] pin to panel
+    - [ ] virtual keyboard
 - dev
     - [ ] rust
         - [ ] wasm
