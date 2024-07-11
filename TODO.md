@@ -1,0 +1,14 @@
+- fcitx5
+    - [ ] default en
+    - [ ] rime-wubi
+- plasma
+    - [ ] pin to panel
+- dev
+    - [ ] rust
+    - [ ] haskell
+- colmena
+    - [ ] https://nixos-and-flakes.thiscute.world/zh/best-practices/remote-deployment
+- iso
+    - [ ] test install
+- cache
+    - [ ] https://nixos-and-flakes.thiscute.world/zh/nix-store/host-your-own-binary-cache-server
