@@ -1,7 +1,7 @@
 {  pkgs,  lib,  ...}:
 
 {
-  
+
   fonts = {
     packages = with pkgs; [
       # normal fonts
@@ -9,7 +9,7 @@
       noto-fonts-cjk
       noto-fonts-emoji
 
-      # nerdfonts 
+      # nerdfonts
       (nerdfonts.override {fonts = ["Monaspace"];})
     ];
 

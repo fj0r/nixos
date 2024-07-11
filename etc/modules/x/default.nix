@@ -5,7 +5,6 @@
   services.xserver.enable = true;
 
   environment.systemPackages = with pkgs; [
-    gparted
     xclip
     neovide
     alacritty

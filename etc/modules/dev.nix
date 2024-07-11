@@ -18,6 +18,8 @@
 
     gcc
     cmake
+
+    vscode-fhs
   ];
 
   programs.neovim = {
@@ -25,5 +27,4 @@
     withPython3 = true;
     withNodeJs = true;
   };
-
 }

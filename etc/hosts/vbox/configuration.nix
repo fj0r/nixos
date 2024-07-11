@@ -76,6 +76,16 @@
     };
   };
 
+  services.wstunnel.enable = true;
+  services.wstunnel.clients.link = {
+    enable = true;
+    autoStart = true;
+    remoteToLocal = [
+      "tcp://7788:localhost:2222"
+    ];
+    connectTo = "ws://10.0.2.2:7787";
+  };
+
   #home-manager.users = {
   #  agent = { pkgs, ... }: {
   #    home.packages = [ ];
