@@ -6,8 +6,11 @@
     mutagen
     rustic-rs
     duckdb
+    vscode-fhs
+
     nodejs
-    (python3.withPackages(ps: with ps; [
+    (python3.withPackages(px: with px; [
+        virtualenv
         httpx aiofile aiostream fastapi uvicorn
         debugpy pytest pydantic pyparsing
         ipython typer pydantic-settings pyyaml
@@ -19,7 +22,11 @@
     gcc
     cmake
 
-    vscode-fhs
+    wasmtime
+    rustc
+    rust-analyzer
+    rust-script
+    cargo
   ];
 
   programs.neovim = {

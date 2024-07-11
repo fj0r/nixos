@@ -5,7 +5,10 @@
     - [ ] pin to panel
 - dev
     - [ ] rust
+        - [ ] wasm
     - [ ] haskell
+    - [ ] https://github.com/cachix/devenv
+    - [ ] https://www.jetify.com/devbox/docs/
 - colmena
     - [ ] https://nixos-and-flakes.thiscute.world/zh/best-practices/remote-deployment
 - iso
