@@ -14,9 +14,10 @@ nixos-generate-config --root /mnt
 
 # , sync configuration.nix
 
-nixos-install --option substituters https://mirrors.ustc.edu.cn/nix-channels/store
+nixos-install --flake /mnt/etc/nixos#nixos --root /mnt
+    #--option substituters https://mirrors.ustc.edu.cn/nix-channels/store
+    #--option substituters https://mirror.sjtu.edu.cn/nix-channels/store
 #nixos-install
-#nixos-install --option substituters https://mirror.sjtu.edu.cn/nix-channels/store
 ```
 
 

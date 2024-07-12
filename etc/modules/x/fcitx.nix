@@ -11,6 +11,6 @@
         inputMethod = {};
       };
     };
-    #ibus.engines = with pkgs.ibus-engines; [ rime table-chinese ];
+      #ibus.engines = with pkgs.ibus-engines; [ rime table-chinese ];
   };
 }
