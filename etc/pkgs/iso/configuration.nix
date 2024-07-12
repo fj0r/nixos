@@ -35,14 +35,18 @@
     "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIK2Q46WeaBZ9aBkS3TF2n9laj1spUkpux/zObmliHUOI"
   ];
   users.users = {
-    "nixos" = {
+    "agent" = {
       isNormalUser = true;
-      home = "/home/nixos";
       password = "";
       uid = 1000;
-      extraGroups = [ "systemd-journal" "wheel" ];
+      extraGroups = [ "wheel" "networkmanager" "systemd-journal"]; # Enable ‘sudo’ for the user.
+      shell = pkgs.nushell;
+      openssh.authorizedKeys.keys = [
+        "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIK2Q46WeaBZ9aBkS3TF2n9laj1spUkpux/zObmliHUOI"
+      ];
     };
   };
+  services.displayManager.autoLogin.user = "agent";
 
 
   services.avahi = {
