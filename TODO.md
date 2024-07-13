@@ -13,6 +13,7 @@
 - colmena
     - [ ] https://nixos-and-flakes.thiscute.world/zh/best-practices/remote-deployment
 - iso
-    - [ ] test install
+    - [x] test install
+    - [ ] fallback kernel image
 - cache
     - [ ] https://nixos-and-flakes.thiscute.world/zh/nix-store/host-your-own-binary-cache-server

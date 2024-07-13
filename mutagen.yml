@@ -1,0 +1,15 @@
+sync:
+  defaults:
+    flushOnCreate: true
+    ignore:
+      vcs: true
+    permissions:
+      defaultFileMode: 644
+      defaultDirectoryMode: 755
+  nixos:
+    alpha: "~/Configuration/nixos"
+    beta: "vbox-host:~/Configuration/nixos"
+    mode: "two-way-resolved"
+    ignore:
+      paths:
+        - result

@@ -53,22 +53,19 @@ for e in [nuon toml yaml json] {
 
 'setup mount'
 | comma fun {|a,s,_|
-    let disk = $a.0? | default '/dev/sda'
-    let root = $a.1? | default '/dev/disk/by-label/nixos'
-    let boot = $a.2? | default '/dev/disk/by-label/boot'
+    let root = $a.0? | default '/dev/disk/by-label/nixos'
+    let boot = $a.1? | default '/dev/disk/by-label/boot'
     let cmd = [
-        $"ROOT=($root)"
-        $"BOOT=($boot)"
         # 启用透明压缩参数挂载 root 子卷
-        $"mount -o compress=zstd,subvol=@root $ROOT /mnt"
+        $"mount -o compress=zstd,subvol=@root ($root) /mnt"
         # 挂载 boot
-        $"mount $BOOT /mnt/boot"
+        $"mount ($boot) /mnt/boot"
         # 启用透明压缩参数挂载 home 子卷
-        $"mount -o compress=zstd,subvol=@home $ROOT /mnt/home"
+        $"mount -o compress=zstd,subvol=@home ($root) /mnt/home"
         # 启用透明压缩并不记录时间戳参数挂载 nix 子卷
-        $"mount -o compress=zstd,noatime,subvol=@nix $ROOT /mnt/nix"
+        $"mount -o compress=zstd,noatime,subvol=@nix ($root) /mnt/nix"
         # swapfile
-        $"mount -o subvol=@swap $ROOT /mnt/swap"
+        $"mount -o subvol=@swap ($root) /mnt/swap"
         $"swapon /mnt/swap/swapfile"
     ]
     | str join (char newline)
