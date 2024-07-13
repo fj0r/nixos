@@ -14,7 +14,7 @@ nixos-generate-config --root /mnt
 
 # , sync configuration.nix
 
-nixos-install --flake /mnt/etc/nixos#workstation --root /mnt
+nixos-install --root /mnt --flake /mnt/etc/nixos#server
     #--option substituters https://mirrors.ustc.edu.cn/nix-channels/store
     #--option substituters https://mirror.sjtu.edu.cn/nix-channels/store
 #nixos-install
@@ -24,7 +24,7 @@ nixos-install --flake /mnt/etc/nixos#workstation --root /mnt
 modify
 ```
 nix flake update
-nixos-rebuild switch --upgrade --flake .#workstation
+nixos-rebuild switch --upgrade --flake .#server
 nixos-rebuild switch --upgrade --option binary-caches "" --option substituters false
 ```
 
@@ -36,4 +36,9 @@ nixos-rebuild switch --upgrade
 search
 ```
 nix-env -qaP '.*pip.*'
+```
+
+clean
+```
+nix-collect-garbage --delete-old
 ```

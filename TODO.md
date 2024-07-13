@@ -2,6 +2,7 @@
     - [ ] default en
     - [ ] rime-wubi
 - plasma
+    - [x] plasma manager
     - [ ] pin to panel
     - [ ] virtual keyboard
 - dev
