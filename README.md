@@ -14,7 +14,7 @@ nixos-generate-config --root /mnt
 
 # , sync configuration.nix
 
-nixos-install --flake /mnt/etc/nixos#nixos --root /mnt
+nixos-install --flake /mnt/etc/nixos#workstation --root /mnt
     #--option substituters https://mirrors.ustc.edu.cn/nix-channels/store
     #--option substituters https://mirror.sjtu.edu.cn/nix-channels/store
 #nixos-install
@@ -23,6 +23,8 @@ nixos-install --flake /mnt/etc/nixos#nixos --root /mnt
 
 modify
 ```
+nix flake update
+nixos-rebuild switch --upgrade --flake .#workstation
 nixos-rebuild switch --upgrade --option binary-caches "" --option substituters false
 ```
 

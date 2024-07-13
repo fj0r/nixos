@@ -9,24 +9,37 @@
 
     nixos-generators.url = "github:nix-community/nixos-generators";
     nixos-generators.inputs.nixpkgs.follows = "nixpkgs";
+
+    plasma-manager = {
+      url = "github:nix-community/plasma-manager";
+      inputs.nixpkgs.follows = "nixpkgs";
+      inputs.home-manager.follows = "home-manager";
+    };
   };
 
-  outputs = inputs@{ self, nixpkgs, home-manager, ... }: {
+  outputs = inputs@{ self, nixpkgs, home-manager, plasma-manager, ... }: {
 
     nixosConfigurations = {
-      nixos = nixpkgs.lib.nixosSystem {
+      workstation = nixpkgs.lib.nixosSystem {
         system = "x86_64-linux";
         modules = [
-          ./hosts/vbox/configuration.nix
+          ./hosts/mobi/configuration.nix
           home-manager.nixosModules.home-manager
           {
             home-manager.useGlobalPkgs = true;
             home-manager.useUserPackages = true;
             home-manager.users.agent = import ./home;
 
+            home-manager.sharedModules = [ plasma-manager.homeManagerModules.plasma-manager ];
             # Optionally, use home-manager.extraSpecialArgs to pass
             # arguments to home.nix
           }
+        ] ;
+      };
+      server = nixpkgs.lib.nixosSystem {
+        system = "x86_64-linux";
+        modules = [
+          ./hosts/vbox/configuration.nix
         ] ;
       };
      };
