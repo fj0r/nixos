@@ -20,10 +20,10 @@
   outputs = inputs@{ self, nixpkgs, home-manager, plasma-manager, ... }: {
 
     nixosConfigurations = {
-      workstation = nixpkgs.lib.nixosSystem {
+      nomad = nixpkgs.lib.nixosSystem {
         system = "x86_64-linux";
         modules = [
-          ./hosts/mobi/configuration.nix
+          ./hosts/nomad/configuration.nix
           home-manager.nixosModules.home-manager
           {
             home-manager.useGlobalPkgs = true;

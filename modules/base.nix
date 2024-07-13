@@ -125,6 +125,7 @@
     git
     neovim
     nushell
+    helix
     curl wget
     sqlite
 
