@@ -42,7 +42,7 @@
         "${inputs.nixpkgs}/nixos/modules/installer/cd-dvd/installation-cd-minimal.nix"
         ./pkgs/iso
         {
-          system.stateVersion = "23.11";
+          system.stateVersion = "24.05";
         }
         home-manager.nixosModules.home-manager
         {

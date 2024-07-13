@@ -26,7 +26,7 @@
     # nameservers = [ "192.168.1.1" "1.1.1.1" "8.8.8.8" ];
   };
 
-  boot.supportedFilesystems = [ "zfs" "f2fs" ];
+  boot.supportedFilesystems = [ "zfs" "f2fs" "btrfs" ];
   # serial connection for apu
   boot.kernelParams = [ "console=ttyS0,115200n8" ];
 
