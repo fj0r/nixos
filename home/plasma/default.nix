@@ -30,5 +30,18 @@
       #  ];
       #}
     ];
+    spectacle.shortcuts = {
+      launch = "Print";
+      launchWithoutCapturing = "Meta+Print";
+      captureActiveWindow = "Meta+Alt+S";
+      captureEntireDesktop = "Meta+Shift+S";
+      captureRectangularRegion = "Meta+S";
+      captureWindowUnderCursor = "Meta+Ctrl+S";
+      recordRegion = "Meta+Shift+R";
+      recordScreen = "Meta+Alt+R";
+      recordWindow = "Meta+Ctrl+R";
+    };
+    shortcuts = {
+    };
   };
 }

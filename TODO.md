@@ -1,9 +1,10 @@
 - fcitx5
-    - [ ] default en
-    - [ ] rime-wubi
+    - [x] ~default en~
+    - [x] ~rime-wubi~
 - plasma
     - [x] plasma manager
-    - [ ] pin to panel
+    - [x] ~pin to panel~
+    - [x] spectacle
     - [ ] virtual keyboard
 - dev
     - [ ] rust
