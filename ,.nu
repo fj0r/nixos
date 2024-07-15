@@ -198,7 +198,7 @@ for e in [nuon toml yaml json] {
 
 'setup sync'
 | comma fun {|a,s,_|
-    rsync ...$s.sync.args etc/ $"($s.sync.host):nixos/" 
+    rsync ...$s.sync.args etc/ $"($s.sync.host):nixos/"
     ^ssh ...$s.login 'sudo rsync -avp /home/agent/nixos/ /etc/nixos/'
 
 }

@@ -23,7 +23,10 @@
     cmake
 
     wasmtime
+    #pkgsCross.wasi32.buildPackages.rustc
     rustc
+    rustfmt
+    clippy
     rust-analyzer
     rust-script
     cargo

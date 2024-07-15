@@ -1,13 +1,13 @@
 - fcitx5
     - [x] ~default en~
-    - [x] ~rime-wubi~
+    - [ ] ~rime-wubi~
 - plasma
     - [x] plasma manager
     - [x] ~pin to panel~
-    - [x] spectacle
+    - [ ] spectacle
     - [ ] virtual keyboard
 - dev
-    - [ ] rust
+    - [x] rust
         - [ ] wasm
     - [ ] haskell
     - [ ] https://github.com/cachix/devenv

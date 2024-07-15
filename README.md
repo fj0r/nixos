@@ -42,3 +42,13 @@ clean
 ```
 nix-collect-garbage --delete-old
 ```
+
+inspect
+```
+sudo nix repl -f '<nixpkgs>'
+:?
+
+sudo nix repl
+:lf .
+outputs.nixosConfigurations.nixos.pkgs.kdePackages.
+```
