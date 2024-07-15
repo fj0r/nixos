@@ -6,7 +6,7 @@
     panels = [
       # Windows-like panel at the bottom
       {
-        floating = true;
+        floating = false;
         hiding = "dodgewindows";
         alignment = "center";
         lengthMode = "fit";

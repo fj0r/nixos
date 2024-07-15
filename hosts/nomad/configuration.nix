@@ -48,7 +48,7 @@
   # services.printing.enable = true;
 
   # Enable sound.
-  sound.enable = true;
+  sound.enable = false;
   hardware.pulseaudio.enable = false;
 
   services.power-profiles-daemon = {
