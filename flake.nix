@@ -55,7 +55,7 @@
         "${inputs.nixpkgs}/nixos/modules/installer/cd-dvd/installation-cd-minimal.nix"
         ./pkgs/iso
         {
-          system.stateVersion = "24.05";
+          system.stateVersion = "24.11";
         }
         home-manager.nixosModules.home-manager
         {
@@ -63,6 +63,7 @@
           home-manager.useUserPackages = true;
           home-manager.users.agent = import ./home;
 
+          home-manager.sharedModules = [ plasma-manager.homeManagerModules.plasma-manager ];
           # Optionally, use home-manager.extraSpecialArgs to pass
           # arguments to home.nix
         }

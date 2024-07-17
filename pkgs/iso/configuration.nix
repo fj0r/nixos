@@ -1,15 +1,14 @@
 # images/base-config.nix
-{ lib
-, pkgs
-, ...
-}:
+{ lib, pkgs, ...}:
+
 {
-  imports = [
-    ../../modules/base.nix
-    ../../modules/dev.nix
-    ../../modules/container.nix
-    ../../modules/x/kde.nix
-  ];
+  imports =
+    [
+      ../../modules/base.nix
+      ../../modules/dev.nix
+      ../../modules/container.nix
+      ../../modules/x/kde.nix
+    ];
 
   networking = {
     useDHCP = false;
