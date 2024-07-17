@@ -22,7 +22,7 @@
   boot.loader.timeout = 1;
   boot.loader.systemd-boot = {
     enable = true;
-    configurationLimit = 3;
+    configurationLimit = 5;
   };
   boot.loader.efi.canTouchEfiVariables = true;
   # boot.loader.grub.enable = true;
@@ -61,7 +61,7 @@
     root.hashedPassword = "!";
 
     agent = {
-      initialPassword = "agent";
+      initialPassword = "asdf";
       isNormalUser = true;
       extraGroups = [ "wheel" "networkmanager" "systemd-journal"]; # Enable ‘sudo’ for the user.
       shell = pkgs.nushell;
