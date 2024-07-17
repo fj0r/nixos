@@ -1,5 +1,5 @@
-parted /dev/sda -- mklabel gpt
-parted /dev/sda -- mkpart ESP fat32 1MB 512MB
+parted /dev/sda -a optimal -- mklabel gpt
+parted /dev/sda -a optimal -- mkpart ESP fat32 0% 512MB
 parted /dev/sda -- set 1 esp on
 parted /dev/sda -- mkpart primary 512MB 100%
 mkfs.fat -F 32 -n boot /dev/sda1
