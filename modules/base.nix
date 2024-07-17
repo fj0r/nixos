@@ -129,6 +129,7 @@
     curl wget
     sqlite
 
+    parted
     wireguard-tools
     dust
     tree
