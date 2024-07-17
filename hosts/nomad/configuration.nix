@@ -9,6 +9,8 @@
   imports =
     [
       ../../modules/base.nix
+      ../../modules/sys.nix
+      ../../modules/user/agent.nix
       ../../modules/dev.nix
       ../../modules/x/kde.nix
       ../../modules/container.nix
@@ -17,90 +19,17 @@
     ];
 
 
-  # Use the GRUB 2 boot loader.
-  # boot.loader.systemd-boot.enable = true;
-  boot.loader.timeout = 1;
-  boot.loader.systemd-boot = {
-    enable = true;
-    configurationLimit = 5;
-  };
-  boot.loader.efi.canTouchEfiVariables = true;
-
-  # boot.loader.grub.enable = true;
-  # boot.loader.grub.efiSupport = true;
-  # boot.loader.grub.efiInstallAsRemovable = true;
-  # boot.loader.efi.efiSysMountPoint = "/boot/efi";
-  # Define on which hard drive you want to install Grub.
-  # boot.loader.grub.device = "nodev"; # or "nodev" for efi only
-
 
   networking.hostName = "nomad"; # Define your hostname.
+
   # Pick only one of the below networking options.
   # networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
-  networking.networkmanager.enable = true;  # Easiest to use and most distros use this by default.
 
   # Configure network proxy if necessary
   # networking.proxy.default = "http://172.178.5.21:7890/";
   # networking.proxy.noProxy = "127.0.0.1,localhost,internal.domain";
 
 
-  # Enable CUPS to print documents.
-  # services.printing.enable = true;
-
-  hardware.pulseaudio.enable = false;
-
-  services.power-profiles-daemon = {
-    enable = true;
-  };
-  security.polkit.enable = true;
-
-  # Enable touchpad support (enabled default in most desktopManager).
-  services.libinput.enable = true;
-
-  # Define a user account. Don't forget to set a password with ‘passwd’.
-  users.users = {
-    root.hashedPassword = "!";
-
-    agent = {
-      initialPassword = "asdf";
-      isNormalUser = true;
-      extraGroups = [ "wheel" "networkmanager" "systemd-journal"]; # Enable ‘sudo’ for the user.
-      shell = pkgs.nushell;
-      packages = with pkgs; [
-        #tree
-      ];
-      openssh.authorizedKeys.keys = [
-        "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIK2Q46WeaBZ9aBkS3TF2n9laj1spUkpux/zObmliHUOI"
-      ];
-    };
-  };
-  services.displayManager.autoLogin.user = "agent";
-
-  services.wstunnel.enable = true;
-  services.wstunnel.clients.link = {
-    enable = true;
-    autoStart = true;
-    remoteToLocal = [
-      "tcp://7788:localhost:2222"
-    ];
-    connectTo = "ws://10.0.2.2:7787";
-  };
-
-  #home-manager.users = {
-  #  agent = { pkgs, ... }: {
-  #    home.packages = [ ];
-  #    programs.neovim.enable = true;
-  #  };
-  #};
-
-
-  # Some programs need SUID wrappers, can be configured further or are
-  # started in user sessions.
-  # programs.mtr.enable = true;
-  # programs.gnupg.agent = {
-  #   enable = true;
-  #   enableSSHSupport = true;
-  # };
 
   # List services that you want to enable:
 
@@ -122,6 +51,6 @@
   # this value at the release version of the first install of this system.
   # Before changing this value read the documentation for this option
   # (e.g. man configuration.nix or on https://nixos.org/nixos/options.html).
-  system.stateVersion = "24.05"; # Did you read the comment?
+  system.stateVersion = "24.11"; # Did you read the comment?
 
 }

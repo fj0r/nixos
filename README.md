@@ -2,7 +2,7 @@ install
 ```
 sudo -i
 
-sh partitions.sh
+bash partitions.sh
 
 nixos-generate-config --root /mnt
 
