@@ -49,6 +49,9 @@
     ethtool
     pciutils # lspci
     usbutils # lsusb
+
+    minio-client
+    rustdesk
   ];
 
   home.stateVersion = "24.05";

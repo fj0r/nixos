@@ -28,5 +28,6 @@
 
   environment.systemPackages = with pkgs; [
     firefox
+    wireshark
   ];
 }
