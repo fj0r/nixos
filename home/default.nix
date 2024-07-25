@@ -52,6 +52,8 @@
 
     minio-client
     rustdesk
+    ollama # ollama-cuda
+    yt-dlp
   ];
 
   home.stateVersion = "24.05";
