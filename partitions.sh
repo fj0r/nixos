@@ -1,19 +1,23 @@
-parted /dev/sda -a optimal -- mklabel gpt
-parted /dev/sda -a optimal -- mkpart ESP fat32 0% 512MB
+parted /dev/sda -- mklabel gpt
+parted /dev/sda -- mkpart ESP fat32 1MB 512MB
 parted /dev/sda -- set 1 esp on
 parted /dev/sda -- mkpart primary 512MB 100%
 mkfs.fat -F 32 -n boot /dev/sda1
 mkfs.btrfs -f -L nixos /dev/sda2
 mount /dev/disk/by-label/nixos /mnt
-btrfs subvolume create /mnt/@root
+btrfs subvolume create /mnt/@
 btrfs subvolume create /mnt/@home
-btrfs subvolume create /mnt/@nix
+btrfs subvolume create /mnt/@var
 btrfs subvolume create /mnt/@swap
+btrfs subvolume create /mnt/@snapshots
+btrfs subvolume create /mnt/@nix
 umount /mnt
-mount -o compress=zstd,subvol=@root /dev/disk/by-label/nixos /mnt
-mkdir /mnt/{home,etc,nix,boot,swap}
+mount -o compress=zstd,subvol=@ /dev/disk/by-label/nixos /mnt
+mkdir /mnt/{boot,etc,home,var,swap,.snapshots,nix}
 mount /dev/disk/by-label/boot /mnt/boot
 mount -o compress=zstd,subvol=@home /dev/disk/by-label/nixos /mnt/home
+mount -o compress=zstd,noatime,subvol=@var /dev/disk/by-label/nixos /mnt/var
+mount -o compress=zstd,noatime,subvol=@snapshots /dev/disk/by-label/nixos /mnt/.snapshots
 mount -o compress=zstd,noatime,subvol=@nix /dev/disk/by-label/nixos /mnt/nix
 mount -o subvol=@swap /dev/disk/by-label/nixos /mnt/swap
 touch /mnt/swap/swapfile

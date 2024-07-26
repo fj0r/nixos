@@ -81,7 +81,21 @@ for e in [nuon toml yaml json] {
 
 'setup partitions'
 | comma fun {|a,s,_|
-    let disk = $a.0? | default '/dev/sda'
+    let label = $a.0
+    let disk = $a.1? | default '/dev/sda'
+    let stmt = if $label == 'nixos' {
+        [
+            [$"btrfs subvolume create /mnt/@nix"]
+            $"mkdir /mnt/{boot,etc,home,var,swap,.snapshots,nix}"
+            [$"mount -o compress=zstd,noatime,subvol=@nix /dev/disk/by-label/($label) /mnt/nix"]
+        ]
+    } else {
+        [
+            []
+            $"mkdir /mnt/{boot,etc,home,var,swap,.snapshots}"
+            []
+        ]
+    }
     let cmd = [
         "ls /sys/firmware/efi/efivars"
         $"parted ($disk) -- mklabel gpt"
@@ -89,25 +103,23 @@ for e in [nuon toml yaml json] {
         $"parted ($disk) -- set 1 esp on"
         $"parted ($disk) -- mkpart primary 512MB 100%"
         $"mkfs.fat -F 32 -n boot /dev/sda1"
-        $"mkfs.btrfs -f -L nixos /dev/sda2"
-        $"mount /dev/disk/by-label/nixos /mnt"
-        $"btrfs subvolume create /mnt/@root"
+        $"mkfs.btrfs -f -L ($label) /dev/sda2"
+        $"mount /dev/disk/by-label/($label) /mnt"
+        $"btrfs subvolume create /mnt/@"
         $"btrfs subvolume create /mnt/@home"
-        $"btrfs subvolume create /mnt/@nix"
+        $"btrfs subvolume create /mnt/@var"
         $"btrfs subvolume create /mnt/@swap"
+        $"btrfs subvolume create /mnt/@snapshots"
+        ...($stmt | get 0)
         $"umount /mnt"
-        # 启用透明压缩参数挂载 root 子卷
-        $"mount -o compress=zstd,subvol=@root /dev/disk/by-label/nixos /mnt"
-        # 创建 home，nix，boot 目录
-        $"mkdir /mnt/{home,nix,boot,swap}"
-        # 挂载 boot
+        $"mount -o compress=zstd,subvol=@ /dev/disk/by-label/($label) /mnt"
+        ($stmt | get 1)
         $"mount /dev/disk/by-label/boot /mnt/boot"
-        # 启用透明压缩参数挂载 home 子卷
-        $"mount -o compress=zstd,subvol=@home /dev/disk/by-label/nixos /mnt/home"
-        # 启用透明压缩并不记录时间戳参数挂载 nix 子卷
-        $"mount -o compress=zstd,noatime,subvol=@nix /dev/disk/by-label/nixos /mnt/nix"
-        # swapfile
-        $"mount -o subvol=@swap /dev/disk/by-label/nixos /mnt/swap"
+        $"mount -o compress=zstd,subvol=@home /dev/disk/by-label/($label) /mnt/home"
+        $"mount -o compress=zstd,noatime,subvol=@var /dev/disk/by-label/($label) /mnt/var"
+        $"mount -o compress=zstd,noatime,subvol=@snapshots /dev/disk/by-label/($label) /mnt/.snapshots"
+        ...($stmt | get 2)
+        $"mount -o subvol=@swap /dev/disk/by-label/($label) /mnt/swap"
         $"touch /mnt/swap/swapfile"
         $"chmod 600 /mnt/swap/swapfile"
         # Disable COW for this file.
@@ -122,9 +134,12 @@ for e in [nuon toml yaml json] {
         $cmd | ^ssh ...$s.login 'sudo bash'
     }
 } {
-    cmp: {|a,s| [
-        '/dev/sda'
-        ] }
+    cmp: {|a,s|
+        match ($a | length) {
+            1 => [nixos arch]
+            2 => [ '/dev/sda' ]
+        }
+    }
 }
 
 'setup channel'
