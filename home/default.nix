@@ -51,9 +51,10 @@
     usbutils # lsusb
 
     minio-client
-    rustdesk
+    #rustdesk
     ollama # ollama-cuda
     yt-dlp
+    wireshark
   ];
 
   home.stateVersion = "24.05";

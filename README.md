@@ -26,9 +26,9 @@ nixos-rebuild --option substituters https://mirrors.ustc.edu.cn/nix-channels/sto
 
 upgrade
 ```
-nix flake update
-nix-channel --update
-nixos-rebuild switch --upgrade --flake .#nomad
+sudo nix flake update
+sudo nix-channel --update
+sudo nixos-rebuild switch --upgrade --flake .#nomad
     # --option binary-caches "" --option substituters false
 ```
 
