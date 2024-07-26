@@ -104,6 +104,7 @@ for e in [nuon toml yaml json] {
         $"parted ($disk) -- mkpart primary 512MB 100%"
         $"mkfs.fat -F 32 -n boot /dev/sda1"
         $"mkfs.btrfs -f -L ($label) /dev/sda2"
+        "# sudo btrfs filesystem label <device> <newlabel>"
         $"mount /dev/disk/by-label/($label) /mnt"
         $"btrfs subvolume create /mnt/@"
         $"btrfs subvolume create /mnt/@home"
@@ -121,9 +122,9 @@ for e in [nuon toml yaml json] {
         ...($stmt | get 2)
         $"mount -o subvol=@swap /dev/disk/by-label/($label) /mnt/swap"
         $"touch /mnt/swap/swapfile"
-        $"chmod 600 /mnt/swap/swapfile"
-        # Disable COW for this file.
+        "# Disable COW for this file."
         $"chattr +C /mnt/swap/swapfile"
+        $"chmod 600 /mnt/swap/swapfile"
         $"dd if=/dev/zero of=/mnt/swap/swapfile bs=1G count=8"
         $"mkswap -L swap /mnt/swap/swapfile"
         $"swapon /mnt/swap/swapfile"
