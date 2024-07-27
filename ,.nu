@@ -14,7 +14,7 @@ for e in [nuon toml yaml json] {
 'ssh'
 | comma val null {
     port: 7788
-    user: agent
+    user: master
     host: localhost
     targetPort: 2222
 }
@@ -87,12 +87,17 @@ for e in [nuon toml yaml json] {
         [
             [$"btrfs subvolume create /mnt/@nix"]
             $"mkdir /mnt/{boot,etc,home,var,swap,.snapshots,nix}"
+            [
+                "mkdir /mnt/boot/efi"
+                $"mount /dev/disk/by-label/boot /mnt/boot/efi"
+            ]
             [$"mount -o compress=zstd,noatime,subvol=@nix /dev/disk/by-label/($label) /mnt/nix"]
         ]
     } else {
         [
             []
             $"mkdir /mnt/{boot,etc,home,var,swap,.snapshots}"
+            [$"mount /dev/disk/by-label/boot /mnt/boot"]
             []
         ]
     }
@@ -115,11 +120,11 @@ for e in [nuon toml yaml json] {
         $"umount /mnt"
         $"mount -o compress=zstd,subvol=@ /dev/disk/by-label/($label) /mnt"
         ($stmt | get 1)
-        $"mount /dev/disk/by-label/boot /mnt/boot"
+        ...($stmt| get 2)
         $"mount -o compress=zstd,subvol=@home /dev/disk/by-label/($label) /mnt/home"
         $"mount -o compress=zstd,noatime,subvol=@var /dev/disk/by-label/($label) /mnt/var"
         $"mount -o compress=zstd,noatime,subvol=@snapshots /dev/disk/by-label/($label) /mnt/.snapshots"
-        ...($stmt | get 2)
+        ...($stmt | get 3)
         $"mount -o subvol=@swap /dev/disk/by-label/($label) /mnt/swap"
         $"touch /mnt/swap/swapfile"
         "# Disable COW for this file."
