@@ -73,7 +73,7 @@ arch-chroot /mnt /bin/bash << EOF
         gparted nm-connection-editor networkmanager-openvpn \
         kscreen kvantum powerdevil kdeplasma-addons kde-gtk-config \
         breeze-gtk dolphin okular gwenview ark mpv gimp \
-        alacritty neovide firefox vivaldi
+        alacritty neovide vivaldi chromium
     systemctl enable sddm
 
     # SSD TRIM
