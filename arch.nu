@@ -6,7 +6,51 @@ export def main [] {
         print $"sudo ($i)"
     }
 
-    print (components -kcdv | table -e)
+    for i in (components -kcdv | setup -h 'arch_wd') {
+        print $i
+    }
+}
+
+def setup [
+    --mnt: string = /mnt
+    --master (-m): string = master
+    --password (-p): string
+    --hostname (-h): string
+] {
+    let components = $in
+    mut cmds = []
+    $cmds ++= $"pacstrap -K ($mnt) ($components.name | str join ' ')"
+    $cmds ++= $"genfstab -U ($mnt) >> '($mnt)/etc/fstab'"
+    $cmds ++= [
+        $"echo '### new fstab'"
+        $"cat ($mnt)/etc/fstab"
+    ]
+    let chroot_cmd = $"
+        ln -sf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
+        hwclock --systohc
+        locale-gen
+        echo 'LANG=en_US.UTF-8' > /etc/locale.conf
+        echo '($hostname)' > /etc/hostname
+        passwd -l
+
+        grub-install --target=x86_64-efi --efi-directory=/efi --bootloader-id=GRUB
+        grub-mkconfig -o /boot/grub/grub.cfg
+
+        echo '%wheel ALL=\(ALL:ALL\) NOPASSWD: ALL' >> /etc/sudoers
+        useradd -m -s /bin/nu -G wheel,storage,power,audio,video,docker master
+        #usermod -a -G wheel,storage,power,audio,video,docker master
+        echo 'set password of master'
+        passwd master
+        echo 'lock root'
+        passwd -l root
+
+        ($components.services | flatten | str join (char newline))
+    "
+    $cmds ++= $"arch-chroot ($mnt) /bin/bash << EOF
+    ($chroot_cmd)
+    EOF
+    "
+    $cmds
 }
 
 def components [
@@ -17,96 +61,96 @@ def components [
     --lang (-l): list<string> = []
 ] {
     let manifest = [
-        [ name,                     requires ];
-        [ base,                     [ core ] ],
-        [ base-devel,               [ core, dev ] ],
-        [ linux,                    [ core ] ],
-        [ linux-zen,                [ core, x ] ],
-        [ linux-firmware,           [ core, dev ] ],
-        [ btrfs-progs,              [ core ] ],
-        [ grub,                     [ core ] ],
-        [ efibootmgr,               [ core ] ],
-        [ snapper,                  [ core ] ],
-        [ grub-btrfs,               [ core ] ],
-        [ reflector,                [ core ] ],
-        [ mtools,                   [ core ] ],
-        [ os-prober,                [ core ] ],
-        [ dosfstools,               [ core ] ],
-        [ pipewire,                 [ audio ] ],
-        [ pipewire-alsa,            [ audio ] ],
-        [ pipewire-pulse,           [ audio ] ],
-        [ pipewire-jack,            [ audio ] ],
-        [ wireplumber,              [ audio ] ],
-        [ networkmanager,           [ network ] ],
-        [ resolvconf,               [ network ] ],
-        [ dhcpcd,                   [ network ] ],
-        [ iwctl,                    [ network ] ],
-        [ wireguard-tools,          [ network, vpn ] ],
-        [ sudo,                     [ sys ] ],
-        [ fakeroot,                 [ sys ] ],
-        [ debugedit,                [ sys ] ],
-        [ xdg-user-dirs,            [ sys ] ],
-        [ curl,                     [ base ] ],
-        [ jq,                       [ base ] ],
-        [ openssh,                  [ base ] ],
-        [ rsync,                    [ base ] ],
-        [ tree,                     [ base ] ],
-        [ net-tools,                [ base ] ],
-        [ htop,                     [ base ] ],
-        [ git,                      [ dev ] ],
-        [ neovim,                   [ dev ] ],
-        [ nushell,                  [ dev ] ],
-        [ sqlite,                   [ dev ] ],
-        [ ripgrep,                  [ dev ] ],
-        [ fd,                       [ dev ] ],
-        [ dust,                     [ dev ] ],
-        [ bottom,                   [ dev ] ],
-        [ alacritty,                [ dev, x ] ],
-        [ neovide,                  [ dev, x ] ],
-        [ podman,                   [ container ] ],
-        [ buildah,                  [ container ] ],
-        [ skopeo,                   [ container ] ],
-        [ kubectl,                  [ kubernetes ] ],
-        [ helm,                     [ kubernetes ] ],
-        [ amd-ucode,                [ hardware ] ],
-        [ bluez,                    [ hardware ] ],
-        [ bluez-utils,              [ hardware ] ],
-        [ blueman,                  [ hardware ] ],
-        [ tlp,                      [ hardware ] ],
-        [ tlp-rdw,                  [ hardware ] ],
-        [ acpi,                     [ hardware ] ],
-        [ acpi_call,                [ hardware ] ],
-        [ noto-fonts,               [ font ] ],
-        [ noto-fonts-emoji,         [ font ] ],
-        [ ttf-ubuntu-font-family,   [ font ] ],
-        [ ttf-dejavu,               [ font ] ],
-        [ ttf-freefont,             [ font ] ],
-        [ ttf-liberation,           [ font ] ],
-        [ ttf-droid,                [ font ] ],
-        [ ttf-roboto,               [ font ] ],
-        [ terminus-font,            [ font ] ],
-        [ xdotool,                  [ x ] ],
-        [ xclip,                    [ x ] ],
-        [ vivaldi,                  [ x ] ],
-        [ chromium,                 [ x ] ],
-        [ gparted,                  [ x ] ],
-        [ nm-connection-editor,     [ x ] ],
-        [ networkmanager-openvpn,   [ x, vpn ] ],
-        [ plasma-desktop,           [ kde ] ],
-        [ plasma-pa,                [ kde ] ],
-        [ plasma-nm,                [ kde ] ],
-        [ plasma-systemmonitor,     [ kde ] ],
-        [ kscreen,                  [ kde ] ],
-        [ kvantum,                  [ kde ] ],
-        [ powerdevil,               [ kde ] ],
-        [ kdeplasma-addons,         [ kde ] ],
-        [ kde-gtk-config,           [ kde ] ],
-        [ breeze-gtk,               [ kde ] ],
-        [ dolphin,                  [ kde ] ],
-        [ okular,                   [ kde ] ],
-        [ gwenview,                 [ kde ] ],
-        [ ark,                      [ kde ] ],
-        [ mpv,                      [ kde ] ]
+        [ name,                     requires,           services ];
+        [ base,                     [ core ],           [] ],
+        [ base-devel,               [ core, dev ],      [] ],
+        [ linux,                    [ core ],           [] ],
+        [ linux-zen,                [ core, x ],        [] ],
+        [ linux-firmware,           [ core, dev ],      [] ],
+        [ btrfs-progs,              [ core ],           [] ],
+        [ grub,                     [ core ],           [] ],
+        [ efibootmgr,               [ core ],           [] ],
+        [ snapper,                  [ core ],           [] ],
+        [ grub-btrfs,               [ core ],           [] ],
+        [ reflector,                [ core ],           [] ],
+        [ mtools,                   [ core ],           [] ],
+        [ os-prober,                [ core ],           [] ],
+        [ dosfstools,               [ core ],           [] ],
+        [ pipewire,                 [ audio ],          [] ],
+        [ pipewire-alsa,            [ audio ],          [] ],
+        [ pipewire-pulse,           [ audio ],          [] ],
+        [ pipewire-jack,            [ audio ],          [] ],
+        [ wireplumber,              [ audio ],          [] ],
+        [ networkmanager,           [ network ],        ['systemctl enable NetworkManager', 'systemctl enable systemd-resolved'] ],
+        [ resolvconf,               [ network ],        [] ],
+        [ dhcpcd,                   [ network ],        ['systemctl enable dhcpcd'] ],
+        [ iwctl,                    [ network ],        [] ],
+        [ wireguard-tools,          [ network, vpn ],   [] ],
+        [ sudo,                     [ sys ],            [] ],
+        [ fakeroot,                 [ sys ],            [] ],
+        [ debugedit,                [ sys ],            [] ],
+        [ xdg-user-dirs,            [ sys ],            [] ],
+        [ curl,                     [ base ],           [] ],
+        [ jq,                       [ base ],           [] ],
+        [ openssh,                  [ base ],           ['systemctl enable sshd'] ],
+        [ rsync,                    [ base ],           [] ],
+        [ tree,                     [ base ],           [] ],
+        [ net-tools,                [ base ],           [] ],
+        [ htop,                     [ base ],           [] ],
+        [ git,                      [ dev ],            [] ],
+        [ neovim,                   [ dev ],            [] ],
+        [ nushell,                  [ dev ],            [] ],
+        [ sqlite,                   [ dev ],            [] ],
+        [ ripgrep,                  [ dev ],            [] ],
+        [ fd,                       [ dev ],            [] ],
+        [ dust,                     [ dev ],            [] ],
+        [ bottom,                   [ dev ],            [] ],
+        [ alacritty,                [ dev, x ],         [] ],
+        [ neovide,                  [ dev, x ],         [] ],
+        [ podman,                   [ container ],      [] ],
+        [ buildah,                  [ container ],      [] ],
+        [ skopeo,                   [ container ],      [] ],
+        [ kubectl,                  [ kubernetes ],     [] ],
+        [ helm,                     [ kubernetes ],     [] ],
+        [ amd-ucode,                [ hardware ],       [] ],
+        [ bluez,                    [ hardware ],       ['systemctl enable bluetooth'] ],
+        [ bluez-utils,              [ hardware ],       [] ],
+        [ blueman,                  [ hardware ],       [] ],
+        [ tlp,                      [ hardware ],       ['systemctl enable tlp' 'systemctl mask systemd-rfkill.service' 'systemctl mask systemd-rfkill.socket'] ],
+        [ tlp-rdw,                  [ hardware ],       [] ],
+        [ acpi,                     [ hardware ],       [] ],
+        [ acpi_call,                [ hardware ],       [] ],
+        [ noto-fonts,               [ font ],           [] ],
+        [ noto-fonts-emoji,         [ font ],           [] ],
+        [ ttf-ubuntu-font-family,   [ font ],           [] ],
+        [ ttf-dejavu,               [ font ],           [] ],
+        [ ttf-freefont,             [ font ],           [] ],
+        [ ttf-liberation,           [ font ],           [] ],
+        [ ttf-droid,                [ font ],           [] ],
+        [ ttf-roboto,               [ font ],           [] ],
+        [ terminus-font,            [ font ],           [] ],
+        [ xdotool,                  [ x ],              [] ],
+        [ xclip,                    [ x ],              [] ],
+        [ vivaldi,                  [ x ],              [] ],
+        [ chromium,                 [ x ],              [] ],
+        [ gparted,                  [ x ],              [] ],
+        [ nm-connection-editor,     [ x ],              [] ],
+        [ networkmanager-openvpn,   [ x, vpn ],         [] ],
+        [ plasma-desktop,           [ kde ],            ['systemctl enable sddm'] ],
+        [ plasma-pa,                [ kde ],            [] ],
+        [ plasma-nm,                [ kde ],            [] ],
+        [ plasma-systemmonitor,     [ kde ],            [] ],
+        [ kscreen,                  [ kde ],            [] ],
+        [ kvantum,                  [ kde ],            [] ],
+        [ powerdevil,               [ kde ],            [] ],
+        [ kdeplasma-addons,         [ kde ],            [] ],
+        [ kde-gtk-config,           [ kde ],            [] ],
+        [ breeze-gtk,               [ kde ],            [] ],
+        [ dolphin,                  [ kde ],            [] ],
+        [ okular,                   [ kde ],            [] ],
+        [ gwenview,                 [ kde ],            [] ],
+        [ ark,                      [ kde ],            [] ],
+        [ mpv,                      [ kde ],            [] ]
     ]
     mut r = [core network sys base hardware ...$lang]
     if $container {
@@ -122,7 +166,7 @@ def components [
         $r ++= [dev]
     }
     let r = $r | uniq
-    $manifest | filter {|x| $x.requires | all {|y| $y in $r } } | get name
+    $manifest | filter {|x| $x.requires | all {|y| $y in $r } } | select name services
 }
 
 
