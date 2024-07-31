@@ -11,6 +11,7 @@ export def main [] {
     }
 }
 
+
 def setup [
     --mnt: string = /mnt
     --master (-m): string = master
@@ -18,6 +19,8 @@ def setup [
     --hostname (-h): string
 ] {
     let components = $in
+    let nl = char newline
+    let tab = char tab
     mut cmds = []
     $cmds ++= $"pacstrap -K ($mnt) ($components.name | str join ' ')"
     $cmds ++= $"genfstab -U ($mnt) >> '($mnt)/etc/fstab'"
@@ -25,13 +28,15 @@ def setup [
         $"echo '### new fstab'"
         $"cat ($mnt)/etc/fstab"
     ]
+    let services = $components.services | flatten | str join $'($nl)($tab)'
     let chroot_cmd = $"
         ln -sf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
         hwclock --systohc
         locale-gen
         echo 'LANG=en_US.UTF-8' > /etc/locale.conf
         echo '($hostname)' > /etc/hostname
-        passwd -l
+        echo 'lock root'
+        passwd -l root
 
         grub-install --target=x86_64-efi --efi-directory=/efi --bootloader-id=GRUB
         grub-mkconfig -o /boot/grub/grub.cfg
@@ -40,16 +45,22 @@ def setup [
         useradd -m -s /bin/nu -G wheel,storage,power,audio,video,docker master
         #usermod -a -G wheel,storage,power,audio,video,docker master
         echo 'set password of master'
-        passwd master
-        echo 'lock root'
-        passwd -l root
+        passwd ($master)
+    "
+    | $"($in)($nl)($tab)($services)"
 
-        ($components.services | flatten | str join (char newline))
+    let teardown = $"
+        mkinitcpio -p linux
+        echo 'fuser -km ($mnt)'
+        umount -R ($mnt)
     "
-    $cmds ++= $"arch-chroot ($mnt) /bin/bash << EOF
-    ($chroot_cmd)
-    EOF
-    "
+
+    $cmds ++= ([
+        $"arch-chroot ($mnt) /bin/bash << EOF"
+        $chroot_cmd
+        $teardown
+        "EOF"
+    ] | str join $nl)
     $cmds
 }
 
@@ -72,7 +83,7 @@ def components [
         [ efibootmgr,               [ core ],           [] ],
         [ snapper,                  [ core ],           [] ],
         [ grub-btrfs,               [ core ],           [] ],
-        [ reflector,                [ core ],           [] ],
+        [ reflector,                [ core ],           ['reflector --country chinese --fastest 10 --threads `nproc` --save /etc/pacman.d/mirrorlist'] ],
         [ mtools,                   [ core ],           [] ],
         [ os-prober,                [ core ],           [] ],
         [ dosfstools,               [ core ],           [] ],
@@ -81,7 +92,7 @@ def components [
         [ pipewire-pulse,           [ audio ],          [] ],
         [ pipewire-jack,            [ audio ],          [] ],
         [ wireplumber,              [ audio ],          [] ],
-        [ networkmanager,           [ network ],        ['systemctl enable NetworkManager', 'systemctl enable systemd-resolved'] ],
+        [ networkmanager,           [ network ],        ['systemctl enable NetworkManager', 'systemctl enable systemd-resolved', 'timedatectl set-ntp true'] ],
         [ resolvconf,               [ network ],        [] ],
         [ dhcpcd,                   [ network ],        ['systemctl enable dhcpcd'] ],
         [ iwctl,                    [ network ],        [] ],

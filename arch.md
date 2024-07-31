@@ -65,7 +65,7 @@ arch-chroot /mnt /bin/bash << EOF
     systemctl enable NetworkManager
     systemctl enable systemd-resolved
 
-    
+
     timedatectl set-ntp true
     # nmcli device wifi connect <SSID> password <password>
     pacman -S xdotool xclip \
