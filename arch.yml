@@ -1,633 +1,511 @@
 - name: base
-  requires:
+  tags:
   - core
-  services: []
 - name: base-devel
-  requires:
+  tags:
   - core
   - dev
-  services: []
 - name: linux
-  requires:
+  tags:
   - core
-  services: []
 - name: linux-zen
-  requires:
+  tags:
   - core
   - x
-  services: []
 - name: linux-firmware
-  requires:
+  tags:
   - core
   - dev
-  services: []
 - name: btrfs-progs
-  requires:
+  tags:
   - core
-  services: []
 - name: grub
-  requires:
+  tags:
   - core
-  services: []
 - name: efibootmgr
-  requires:
+  tags:
   - core
-  services: []
 - name: snapper
-  requires:
+  tags:
   - core
-  services: []
 - name: grub-btrfs
-  requires:
+  tags:
   - core
-  services: []
 - name: reflector
-  requires:
+  tags:
   - core
-  services:
+  post:
   - reflector --country chinese --fastest 10 --threads `nproc` --save /etc/pacman.d/mirrorlist
 - name: mtools
-  requires:
+  tags:
   - core
-  services: []
 - name: os-prober
-  requires:
+  tags:
   - core
-  services: []
 - name: dosfstools
-  requires:
+  tags:
   - core
-  services: []
 - name: pipewire
-  requires:
+  tags:
   - audio
-  services: []
 - name: pipewire-alsa
-  requires:
+  tags:
   - audio
-  services: []
 - name: pipewire-pulse
-  requires:
+  tags:
   - audio
-  services: []
 - name: pipewire-jack
-  requires:
+  tags:
   - audio
-  services: []
 - name: wireplumber
-  requires:
+  tags:
   - audio
-  services: []
 - name: networkmanager
-  requires:
+  tags:
   - network
-  services:
+  post:
   - systemctl enable NetworkManager
   - systemctl enable systemd-resolved
   - timedatectl set-ntp true
 - name: resolvconf
-  requires:
+  tags:
   - network
-  services: []
 - name: dhcpcd
-  requires:
+  tags:
   - network
-  services:
+  post:
   - systemctl enable dhcpcd
 - name: iwctl
-  requires:
+  tags:
   - network
-  services: []
 - name: wireguard-tools
-  requires:
+  tags:
   - network
   - vpn
-  services: []
 - name: sudo
-  requires:
+  tags:
   - sys
-  services: []
 - name: fakeroot
-  requires:
+  tags:
   - sys
-  services: []
 - name: debugedit
-  requires:
+  tags:
   - sys
-  services: []
 - name: xdg-user-dirs
-  requires:
+  tags:
   - sys
-  services: []
 - name: curl
-  requires:
+  tags:
   - base
-  services: []
 - name: jq
-  requires:
+  tags:
   - base
-  services: []
 - name: openssh
-  requires:
+  tags:
   - base
-  services:
+  post:
   - systemctl enable sshd
 - name: rsync
-  requires:
+  tags:
   - base
-  services: []
 - name: tree
-  requires:
+  tags:
   - base
-  services: []
 - name: net-tools
-  requires:
+  tags:
   - base
-  services: []
 - name: htop
-  requires:
+  tags:
   - base
-  services: []
 - name: paru
   type: github
-  requires:
+  tags:
   - base
-  services: []
 - name: git
-  requires:
+  tags:
   - dev
-  services: []
 - name: neovim
-  requires:
+  tags:
   - dev
-  services:
+  post:
   - git clone --depth=3 https://github.com/fj0r/nvim-lua.git $XDG_CONFIG_HOME/nvim
   - opwd=$PWD
   - cd $XDG_CONFIG_HOME/nvim
   - nvim --headless "+Lazy! sync" +qa
   - cd $opwd
 - name: nushell
-  requires:
+  tags:
   - dev
-  services:
+  post:
   - git clone --depth=3 https://github.com/fj0r/nushell.git $XDG_CONFIG_HOME/nushell
 - name: sqlite
-  requires:
+  tags:
   - dev
-  services: []
 - name: ripgrep
-  requires:
+  tags:
   - dev
-  services: []
 - name: fd
-  requires:
+  tags:
   - dev
-  services: []
 - name: dust
-  requires:
+  tags:
   - dev
-  services: []
 - name: bottom
-  requires:
+  tags:
   - dev
-  services: []
 - name: alacritty
-  requires:
+  tags:
   - dev
   - x
-  services: []
 - name: neovide
-  requires:
+  tags:
   - dev
   - x
-  services: []
 - name: gcc
-  requires:
+  tags:
   - dev
   - c
-  services: []
 - name: gdb
-  requires:
+  tags:
   - dev
   - c
-  services: []
 - name: cmake
-  requires:
+  tags:
   - dev
   - c
-  services: []
 - name: ninja
-  requires:
+  tags:
   - dev
   - c
-  services: []
 - name: clang
-  requires:
+  tags:
   - dev
   - c
-  services: []
 - name: nodejs
-  requires:
+  tags:
   - dev
   - js
-  services: []
 - name: npm
-  requires:
+  tags:
   - dev
   - js
-  services: []
 - name: yaml-language-server
   type: npm
-  requires:
+  tags:
   - dev
   - js
   - py
-  services: []
 - name: vscode-langservers-extracted
   type: npm
-  requires:
+  tags:
   - dev
   - js
-  services: []
 - name: pyright
   type: npm
-  requires:
+  tags:
   - dev
   - js
   - py
-  services: []
 - name: quicktype
   type: npm
-  requires:
+  tags:
   - dev
   - js
-  services: []
 - name: '@typespec/json-schema'
   type: npm
-  requires:
+  tags:
   - dev
   - js
-  services: []
 - name: '@typespec/compiler'
   type: npm
-  requires:
+  tags:
   - dev
   - js
-  services: []
 - name: python-pip
-  requires:
+  tags:
   - dev
   - py
-  services: []
 - name: ipython
   type: pip
-  requires:
+  tags:
   - dev
   - py
-  services: []
 - name: python-json-logger
   type: pip
-  requires:
+  tags:
   - dev
   - py
-  services: []
 - name: structlog
   type: pip
-  requires:
+  tags:
   - dev
   - py
-  services: []
 - name: decorator
   type: pip
-  requires:
+  tags:
   - dev
   - py
-  services: []
 - name: boltons
   type: pip
-  requires:
+  tags:
   - dev
   - py
-  services: []
 - name: pyyaml
   type: pip
-  requires:
+  tags:
   - dev
   - py
-  services: []
 - name: pydantic-settings
   type: pip
-  requires:
+  tags:
   - dev
   - py
-  services: []
 - name: typer
   type: pip
-  requires:
+  tags:
   - dev
   - py
-  services: []
 - name: PyParsing
   type: pip
-  requires:
+  tags:
   - dev
   - py
-  services: []
 - name: pydantic
   type: pip
-  requires:
+  tags:
   - dev
   - py
-  services: []
 - name: pytest
   type: pip
-  requires:
+  tags:
   - dev
   - py
-  services: []
 - name: debugpy
   type: pip
-  requires:
+  tags:
   - dev
   - py
-  services: []
 - name: uvicorn
   type: pip
-  requires:
+  tags:
   - dev
   - py
-  services: []
 - name: fastapi
   type: pip
-  requires:
+  tags:
   - dev
   - py
-  services: []
 - name: aiostream
   type: pip
-  requires:
+  tags:
   - dev
   - py
-  services: []
 - name: aiofile
   type: pip
-  requires:
+  tags:
   - dev
   - py
-  services: []
 - name: httpx
   type: pip
-  requires:
+  tags:
   - dev
   - py
-  services: []
 - name: rustup
-  requires:
+  tags:
   - dev
   - rs
-  services:
+  post:
   - rustup component add rust-src clippy rustfmt rust-analyzer
   - rustup target add x86_64-unknown-linux-musl wasm32-wasi wasm32-unknown-unknown
 - name: rust-script
   type: cargo
-  requires:
+  tags:
   - dev
   - rs
-  services: []
 - name: cargo-wasi
   type: cargo
-  requires:
+  tags:
   - dev
   - rs
-  services: []
 - name: cargo-watch
   type: cargo
-  requires:
+  tags:
   - dev
   - rs
-  services: []
 - name: cargo-expand
   type: cargo
-  requires:
+  tags:
   - dev
   - rs
-  services: []
 - name: cargo-eval
   type: cargo
-  requires:
+  tags:
   - dev
   - rs
-  services: []
 - name: cargo-leptos
   type: cargo
-  requires:
+  tags:
   - dev
   - rs
   - frontend
-  services: []
 - name: cargo-generate
   type: cargo
-  requires:
+  tags:
   - dev
   - rs
-  services: []
 - name: cargo-prefetch
   type: cargo
-  requires:
+  tags:
   - dev
   - rs
-  services: []
 - name: cargo-feature
   type: cargo
-  requires:
+  tags:
   - dev
   - rs
-  services: []
 - name: cargo-tree
   type: cargo
-  requires:
+  tags:
   - dev
   - rs
-  services: []
 - name: podman
-  requires:
+  tags:
   - container
-  services: []
 - name: buildah
-  requires:
+  tags:
   - container
-  services: []
 - name: skopeo
-  requires:
+  tags:
   - container
-  services: []
 - name: kubectl
-  requires:
+  tags:
   - kubernetes
-  services: []
 - name: helm
-  requires:
+  tags:
   - kubernetes
-  services: []
 - name: amd-ucode
-  requires:
+  tags:
   - hardware
-  services: []
 - name: bluez
-  requires:
+  tags:
   - hardware
-  services:
+  post:
   - systemctl enable bluetooth
 - name: bluez-utils
-  requires:
+  tags:
   - hardware
-  services: []
 - name: blueman
-  requires:
+  tags:
   - hardware
-  services: []
 - name: tlp
-  requires:
+  tags:
   - hardware
-  services:
+  post:
   - systemctl enable tlp
   - systemctl mask systemd-rfkill.service
   - systemctl mask systemd-rfkill.socket
 - name: tlp-rdw
-  requires:
+  tags:
   - hardware
-  services: []
 - name: acpi
-  requires:
+  tags:
   - hardware
-  services: []
 - name: acpi_call
-  requires:
+  tags:
   - hardware
-  services: []
 - name: noto-fonts
-  requires:
+  tags:
   - font
-  services: []
 - name: noto-fonts-emoji
-  requires:
+  tags:
   - font
-  services: []
 - name: ttf-ubuntu-font-family
-  requires:
+  tags:
   - font
-  services: []
 - name: ttf-dejavu
-  requires:
+  tags:
   - font
-  services: []
 - name: ttf-freefont
-  requires:
+  tags:
   - font
-  services: []
 - name: ttf-liberation
-  requires:
+  tags:
   - font
-  services: []
 - name: ttf-droid
-  requires:
+  tags:
   - font
-  services: []
 - name: ttf-roboto
-  requires:
+  tags:
   - font
-  services: []
 - name: terminus-font
-  requires:
+  tags:
   - font
-  services: []
 - name: xdotool
-  requires:
+  tags:
   - x
-  services: []
 - name: xclip
-  requires:
+  tags:
   - x
-  services: []
 - name: vivaldi
-  requires:
+  tags:
   - x
-  services: []
 - name: chromium
-  requires:
+  tags:
   - x
-  services: []
 - name: gparted
-  requires:
+  tags:
   - x
-  services: []
 - name: nm-connection-editor
-  requires:
+  tags:
   - x
-  services: []
 - name: networkmanager-openvpn
-  requires:
+  tags:
   - x
   - vpn
-  services: []
 - name: plasma-desktop
-  requires:
+  tags:
   - kde
-  services:
+  post:
   - systemctl enable sddm
 - name: plasma-pa
-  requires:
+  tags:
   - kde
-  services: []
 - name: plasma-nm
-  requires:
+  tags:
   - kde
-  services: []
 - name: plasma-systemmonitor
-  requires:
+  tags:
   - kde
-  services: []
 - name: kscreen
-  requires:
+  tags:
   - kde
-  services: []
 - name: kvantum
-  requires:
+  tags:
   - kde
-  services: []
 - name: powerdevil
-  requires:
+  tags:
   - kde
-  services: []
 - name: kdeplasma-addons
-  requires:
+  tags:
   - kde
-  services: []
 - name: kde-gtk-config
-  requires:
+  tags:
   - kde
-  services: []
 - name: breeze-gtk
-  requires:
+  tags:
   - kde
-  services: []
 - name: dolphin
-  requires:
+  tags:
   - kde
-  services: []
 - name: okular
-  requires:
+  tags:
   - kde
-  services: []
 - name: gwenview
-  requires:
+  tags:
   - kde
-  services: []
 - name: ark
-  requires:
+  tags:
   - kde
-  services: []
 - name: mpv
-  requires:
+  tags:
   - kde
-  services: []

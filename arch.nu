@@ -44,7 +44,10 @@ def setup [
         }
     }
     | str join $nl
-    let services = $components.sys.services | flatten | str join $'($nl)($tab)'
+    let post = $components.sys
+    | each {|x| if ($x.post? | is-empty) {[]} else {$x.post} }
+    | flatten
+    | str join $'($nl)($tab)'
     let chroot_cmd = $"
         ln -sf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
         hwclock --systohc
@@ -63,7 +66,7 @@ def setup [
         echo 'set password of master'
         passwd ($master)
     "
-    | $"($in)($nl)($tab)($services)"
+    | $"($in)($nl)($tab)($post)"
 
     let teardown = $"
         mkinitcpio -p linux
@@ -105,7 +108,7 @@ def components [
     let r = $r | uniq
     $manifest
     | filter {|x|
-        $x.requires | all {|y| $y in $r }
+        $x.tags | all {|y| $y in $r }
     }
     | each {|x|
         if ($x.type? | is-empty) {
