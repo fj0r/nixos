@@ -1,0 +1,633 @@
+- name: base
+  requires:
+  - core
+  services: []
+- name: base-devel
+  requires:
+  - core
+  - dev
+  services: []
+- name: linux
+  requires:
+  - core
+  services: []
+- name: linux-zen
+  requires:
+  - core
+  - x
+  services: []
+- name: linux-firmware
+  requires:
+  - core
+  - dev
+  services: []
+- name: btrfs-progs
+  requires:
+  - core
+  services: []
+- name: grub
+  requires:
+  - core
+  services: []
+- name: efibootmgr
+  requires:
+  - core
+  services: []
+- name: snapper
+  requires:
+  - core
+  services: []
+- name: grub-btrfs
+  requires:
+  - core
+  services: []
+- name: reflector
+  requires:
+  - core
+  services:
+  - reflector --country chinese --fastest 10 --threads `nproc` --save /etc/pacman.d/mirrorlist
+- name: mtools
+  requires:
+  - core
+  services: []
+- name: os-prober
+  requires:
+  - core
+  services: []
+- name: dosfstools
+  requires:
+  - core
+  services: []
+- name: pipewire
+  requires:
+  - audio
+  services: []
+- name: pipewire-alsa
+  requires:
+  - audio
+  services: []
+- name: pipewire-pulse
+  requires:
+  - audio
+  services: []
+- name: pipewire-jack
+  requires:
+  - audio
+  services: []
+- name: wireplumber
+  requires:
+  - audio
+  services: []
+- name: networkmanager
+  requires:
+  - network
+  services:
+  - systemctl enable NetworkManager
+  - systemctl enable systemd-resolved
+  - timedatectl set-ntp true
+- name: resolvconf
+  requires:
+  - network
+  services: []
+- name: dhcpcd
+  requires:
+  - network
+  services:
+  - systemctl enable dhcpcd
+- name: iwctl
+  requires:
+  - network
+  services: []
+- name: wireguard-tools
+  requires:
+  - network
+  - vpn
+  services: []
+- name: sudo
+  requires:
+  - sys
+  services: []
+- name: fakeroot
+  requires:
+  - sys
+  services: []
+- name: debugedit
+  requires:
+  - sys
+  services: []
+- name: xdg-user-dirs
+  requires:
+  - sys
+  services: []
+- name: curl
+  requires:
+  - base
+  services: []
+- name: jq
+  requires:
+  - base
+  services: []
+- name: openssh
+  requires:
+  - base
+  services:
+  - systemctl enable sshd
+- name: rsync
+  requires:
+  - base
+  services: []
+- name: tree
+  requires:
+  - base
+  services: []
+- name: net-tools
+  requires:
+  - base
+  services: []
+- name: htop
+  requires:
+  - base
+  services: []
+- name: paru
+  type: github
+  requires:
+  - base
+  services: []
+- name: git
+  requires:
+  - dev
+  services: []
+- name: neovim
+  requires:
+  - dev
+  services:
+  - git clone --depth=3 https://github.com/fj0r/nvim-lua.git $XDG_CONFIG_HOME/nvim
+  - opwd=$PWD
+  - cd $XDG_CONFIG_HOME/nvim
+  - nvim --headless "+Lazy! sync" +qa
+  - cd $opwd
+- name: nushell
+  requires:
+  - dev
+  services:
+  - git clone --depth=3 https://github.com/fj0r/nushell.git $XDG_CONFIG_HOME/nushell
+- name: sqlite
+  requires:
+  - dev
+  services: []
+- name: ripgrep
+  requires:
+  - dev
+  services: []
+- name: fd
+  requires:
+  - dev
+  services: []
+- name: dust
+  requires:
+  - dev
+  services: []
+- name: bottom
+  requires:
+  - dev
+  services: []
+- name: alacritty
+  requires:
+  - dev
+  - x
+  services: []
+- name: neovide
+  requires:
+  - dev
+  - x
+  services: []
+- name: gcc
+  requires:
+  - dev
+  - c
+  services: []
+- name: gdb
+  requires:
+  - dev
+  - c
+  services: []
+- name: cmake
+  requires:
+  - dev
+  - c
+  services: []
+- name: ninja
+  requires:
+  - dev
+  - c
+  services: []
+- name: clang
+  requires:
+  - dev
+  - c
+  services: []
+- name: nodejs
+  requires:
+  - dev
+  - js
+  services: []
+- name: npm
+  requires:
+  - dev
+  - js
+  services: []
+- name: yaml-language-server
+  type: npm
+  requires:
+  - dev
+  - js
+  - py
+  services: []
+- name: vscode-langservers-extracted
+  type: npm
+  requires:
+  - dev
+  - js
+  services: []
+- name: pyright
+  type: npm
+  requires:
+  - dev
+  - js
+  - py
+  services: []
+- name: quicktype
+  type: npm
+  requires:
+  - dev
+  - js
+  services: []
+- name: '@typespec/json-schema'
+  type: npm
+  requires:
+  - dev
+  - js
+  services: []
+- name: '@typespec/compiler'
+  type: npm
+  requires:
+  - dev
+  - js
+  services: []
+- name: python-pip
+  requires:
+  - dev
+  - py
+  services: []
+- name: ipython
+  type: pip
+  requires:
+  - dev
+  - py
+  services: []
+- name: python-json-logger
+  type: pip
+  requires:
+  - dev
+  - py
+  services: []
+- name: structlog
+  type: pip
+  requires:
+  - dev
+  - py
+  services: []
+- name: decorator
+  type: pip
+  requires:
+  - dev
+  - py
+  services: []
+- name: boltons
+  type: pip
+  requires:
+  - dev
+  - py
+  services: []
+- name: pyyaml
+  type: pip
+  requires:
+  - dev
+  - py
+  services: []
+- name: pydantic-settings
+  type: pip
+  requires:
+  - dev
+  - py
+  services: []
+- name: typer
+  type: pip
+  requires:
+  - dev
+  - py
+  services: []
+- name: PyParsing
+  type: pip
+  requires:
+  - dev
+  - py
+  services: []
+- name: pydantic
+  type: pip
+  requires:
+  - dev
+  - py
+  services: []
+- name: pytest
+  type: pip
+  requires:
+  - dev
+  - py
+  services: []
+- name: debugpy
+  type: pip
+  requires:
+  - dev
+  - py
+  services: []
+- name: uvicorn
+  type: pip
+  requires:
+  - dev
+  - py
+  services: []
+- name: fastapi
+  type: pip
+  requires:
+  - dev
+  - py
+  services: []
+- name: aiostream
+  type: pip
+  requires:
+  - dev
+  - py
+  services: []
+- name: aiofile
+  type: pip
+  requires:
+  - dev
+  - py
+  services: []
+- name: httpx
+  type: pip
+  requires:
+  - dev
+  - py
+  services: []
+- name: rustup
+  requires:
+  - dev
+  - rs
+  services:
+  - rustup component add rust-src clippy rustfmt rust-analyzer
+  - rustup target add x86_64-unknown-linux-musl wasm32-wasi wasm32-unknown-unknown
+- name: rust-script
+  type: cargo
+  requires:
+  - dev
+  - rs
+  services: []
+- name: cargo-wasi
+  type: cargo
+  requires:
+  - dev
+  - rs
+  services: []
+- name: cargo-watch
+  type: cargo
+  requires:
+  - dev
+  - rs
+  services: []
+- name: cargo-expand
+  type: cargo
+  requires:
+  - dev
+  - rs
+  services: []
+- name: cargo-eval
+  type: cargo
+  requires:
+  - dev
+  - rs
+  services: []
+- name: cargo-leptos
+  type: cargo
+  requires:
+  - dev
+  - rs
+  - frontend
+  services: []
+- name: cargo-generate
+  type: cargo
+  requires:
+  - dev
+  - rs
+  services: []
+- name: cargo-prefetch
+  type: cargo
+  requires:
+  - dev
+  - rs
+  services: []
+- name: cargo-feature
+  type: cargo
+  requires:
+  - dev
+  - rs
+  services: []
+- name: cargo-tree
+  type: cargo
+  requires:
+  - dev
+  - rs
+  services: []
+- name: podman
+  requires:
+  - container
+  services: []
+- name: buildah
+  requires:
+  - container
+  services: []
+- name: skopeo
+  requires:
+  - container
+  services: []
+- name: kubectl
+  requires:
+  - kubernetes
+  services: []
+- name: helm
+  requires:
+  - kubernetes
+  services: []
+- name: amd-ucode
+  requires:
+  - hardware
+  services: []
+- name: bluez
+  requires:
+  - hardware
+  services:
+  - systemctl enable bluetooth
+- name: bluez-utils
+  requires:
+  - hardware
+  services: []
+- name: blueman
+  requires:
+  - hardware
+  services: []
+- name: tlp
+  requires:
+  - hardware
+  services:
+  - systemctl enable tlp
+  - systemctl mask systemd-rfkill.service
+  - systemctl mask systemd-rfkill.socket
+- name: tlp-rdw
+  requires:
+  - hardware
+  services: []
+- name: acpi
+  requires:
+  - hardware
+  services: []
+- name: acpi_call
+  requires:
+  - hardware
+  services: []
+- name: noto-fonts
+  requires:
+  - font
+  services: []
+- name: noto-fonts-emoji
+  requires:
+  - font
+  services: []
+- name: ttf-ubuntu-font-family
+  requires:
+  - font
+  services: []
+- name: ttf-dejavu
+  requires:
+  - font
+  services: []
+- name: ttf-freefont
+  requires:
+  - font
+  services: []
+- name: ttf-liberation
+  requires:
+  - font
+  services: []
+- name: ttf-droid
+  requires:
+  - font
+  services: []
+- name: ttf-roboto
+  requires:
+  - font
+  services: []
+- name: terminus-font
+  requires:
+  - font
+  services: []
+- name: xdotool
+  requires:
+  - x
+  services: []
+- name: xclip
+  requires:
+  - x
+  services: []
+- name: vivaldi
+  requires:
+  - x
+  services: []
+- name: chromium
+  requires:
+  - x
+  services: []
+- name: gparted
+  requires:
+  - x
+  services: []
+- name: nm-connection-editor
+  requires:
+  - x
+  services: []
+- name: networkmanager-openvpn
+  requires:
+  - x
+  - vpn
+  services: []
+- name: plasma-desktop
+  requires:
+  - kde
+  services:
+  - systemctl enable sddm
+- name: plasma-pa
+  requires:
+  - kde
+  services: []
+- name: plasma-nm
+  requires:
+  - kde
+  services: []
+- name: plasma-systemmonitor
+  requires:
+  - kde
+  services: []
+- name: kscreen
+  requires:
+  - kde
+  services: []
+- name: kvantum
+  requires:
+  - kde
+  services: []
+- name: powerdevil
+  requires:
+  - kde
+  services: []
+- name: kdeplasma-addons
+  requires:
+  - kde
+  services: []
+- name: kde-gtk-config
+  requires:
+  - kde
+  services: []
+- name: breeze-gtk
+  requires:
+  - kde
+  services: []
+- name: dolphin
+  requires:
+  - kde
+  services: []
+- name: okular
+  requires:
+  - kde
+  services: []
+- name: gwenview
+  requires:
+  - kde
+  services: []
+- name: ark
+  requires:
+  - kde
+  services: []
+- name: mpv
+  requires:
+  - kde
+  services: []

@@ -6,7 +6,7 @@ export def main [] {
         print $"sudo ($i)"
     }
 
-    for i in (components -kcdv | setup -h 'arch_wd') {
+    for i in (components -kcdv --lang [c js py rs hs] | setup -h 'arch_wd') {
         print $i
     }
 }
@@ -18,17 +18,33 @@ def setup [
     --password (-p): string
     --hostname (-h): string
 ] {
-    let components = $in
+    let components = $in | group-by type
     let nl = char newline
     let tab = char tab
     mut cmds = []
-    $cmds ++= $"pacstrap -K ($mnt) ($components.name | str join ' ')"
+    mut sys_pkg = $components.sys.name
+    $cmds ++= $"pacstrap -K ($mnt) ($sys_pkg | str join ' ')"
     $cmds ++= $"genfstab -U ($mnt) >> '($mnt)/etc/fstab'"
     $cmds ++= [
         $"echo '### new fstab'"
         $"cat ($mnt)/etc/fstab"
     ]
-    let services = $components.services | flatten | str join $'($nl)($tab)'
+    let pkgs = $components | items {|k, v|
+        match $k {
+            pip => {
+                $"($tab)pip install --no-cache-dir --break-system-packages ($v.name | str join ' ')"
+            }
+            npm => {
+                $"($tab)npm install --location=global ($v.name | str join ' ')"
+            }
+            cargo => {
+                $"($tab)cargo install ($v.name | str join ' ')"
+            }
+            _ => ''
+        }
+    }
+    | str join $nl
+    let services = $components.sys.services | flatten | str join $'($nl)($tab)'
     let chroot_cmd = $"
         ln -sf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
         hwclock --systohc
@@ -58,6 +74,7 @@ def setup [
     $cmds ++= ([
         $"arch-chroot ($mnt) /bin/bash << EOF"
         $chroot_cmd
+        $pkgs
         $teardown
         "EOF"
     ] | str join $nl)
@@ -71,98 +88,7 @@ def components [
     --vpn (-v)
     --lang (-l): list<string> = []
 ] {
-    let manifest = [
-        [ name,                     requires,           services ];
-        [ base,                     [ core ],           [] ],
-        [ base-devel,               [ core, dev ],      [] ],
-        [ linux,                    [ core ],           [] ],
-        [ linux-zen,                [ core, x ],        [] ],
-        [ linux-firmware,           [ core, dev ],      [] ],
-        [ btrfs-progs,              [ core ],           [] ],
-        [ grub,                     [ core ],           [] ],
-        [ efibootmgr,               [ core ],           [] ],
-        [ snapper,                  [ core ],           [] ],
-        [ grub-btrfs,               [ core ],           [] ],
-        [ reflector,                [ core ],           ['reflector --country chinese --fastest 10 --threads `nproc` --save /etc/pacman.d/mirrorlist'] ],
-        [ mtools,                   [ core ],           [] ],
-        [ os-prober,                [ core ],           [] ],
-        [ dosfstools,               [ core ],           [] ],
-        [ pipewire,                 [ audio ],          [] ],
-        [ pipewire-alsa,            [ audio ],          [] ],
-        [ pipewire-pulse,           [ audio ],          [] ],
-        [ pipewire-jack,            [ audio ],          [] ],
-        [ wireplumber,              [ audio ],          [] ],
-        [ networkmanager,           [ network ],        ['systemctl enable NetworkManager', 'systemctl enable systemd-resolved', 'timedatectl set-ntp true'] ],
-        [ resolvconf,               [ network ],        [] ],
-        [ dhcpcd,                   [ network ],        ['systemctl enable dhcpcd'] ],
-        [ iwctl,                    [ network ],        [] ],
-        [ wireguard-tools,          [ network, vpn ],   [] ],
-        [ sudo,                     [ sys ],            [] ],
-        [ fakeroot,                 [ sys ],            [] ],
-        [ debugedit,                [ sys ],            [] ],
-        [ xdg-user-dirs,            [ sys ],            [] ],
-        [ curl,                     [ base ],           [] ],
-        [ jq,                       [ base ],           [] ],
-        [ openssh,                  [ base ],           ['systemctl enable sshd'] ],
-        [ rsync,                    [ base ],           [] ],
-        [ tree,                     [ base ],           [] ],
-        [ net-tools,                [ base ],           [] ],
-        [ htop,                     [ base ],           [] ],
-        [ git,                      [ dev ],            [] ],
-        [ neovim,                   [ dev ],            [] ],
-        [ nushell,                  [ dev ],            [] ],
-        [ sqlite,                   [ dev ],            [] ],
-        [ ripgrep,                  [ dev ],            [] ],
-        [ fd,                       [ dev ],            [] ],
-        [ dust,                     [ dev ],            [] ],
-        [ bottom,                   [ dev ],            [] ],
-        [ alacritty,                [ dev, x ],         [] ],
-        [ neovide,                  [ dev, x ],         [] ],
-        [ podman,                   [ container ],      [] ],
-        [ buildah,                  [ container ],      [] ],
-        [ skopeo,                   [ container ],      [] ],
-        [ kubectl,                  [ kubernetes ],     [] ],
-        [ helm,                     [ kubernetes ],     [] ],
-        [ amd-ucode,                [ hardware ],       [] ],
-        [ bluez,                    [ hardware ],       ['systemctl enable bluetooth'] ],
-        [ bluez-utils,              [ hardware ],       [] ],
-        [ blueman,                  [ hardware ],       [] ],
-        [ tlp,                      [ hardware ],       ['systemctl enable tlp' 'systemctl mask systemd-rfkill.service' 'systemctl mask systemd-rfkill.socket'] ],
-        [ tlp-rdw,                  [ hardware ],       [] ],
-        [ acpi,                     [ hardware ],       [] ],
-        [ acpi_call,                [ hardware ],       [] ],
-        [ noto-fonts,               [ font ],           [] ],
-        [ noto-fonts-emoji,         [ font ],           [] ],
-        [ ttf-ubuntu-font-family,   [ font ],           [] ],
-        [ ttf-dejavu,               [ font ],           [] ],
-        [ ttf-freefont,             [ font ],           [] ],
-        [ ttf-liberation,           [ font ],           [] ],
-        [ ttf-droid,                [ font ],           [] ],
-        [ ttf-roboto,               [ font ],           [] ],
-        [ terminus-font,            [ font ],           [] ],
-        [ xdotool,                  [ x ],              [] ],
-        [ xclip,                    [ x ],              [] ],
-        [ vivaldi,                  [ x ],              [] ],
-        [ chromium,                 [ x ],              [] ],
-        [ gparted,                  [ x ],              [] ],
-        [ nm-connection-editor,     [ x ],              [] ],
-        [ networkmanager-openvpn,   [ x, vpn ],         [] ],
-        [ plasma-desktop,           [ kde ],            ['systemctl enable sddm'] ],
-        [ plasma-pa,                [ kde ],            [] ],
-        [ plasma-nm,                [ kde ],            [] ],
-        [ plasma-systemmonitor,     [ kde ],            [] ],
-        [ kscreen,                  [ kde ],            [] ],
-        [ kvantum,                  [ kde ],            [] ],
-        [ powerdevil,               [ kde ],            [] ],
-        [ kdeplasma-addons,         [ kde ],            [] ],
-        [ kde-gtk-config,           [ kde ],            [] ],
-        [ breeze-gtk,               [ kde ],            [] ],
-        [ dolphin,                  [ kde ],            [] ],
-        [ okular,                   [ kde ],            [] ],
-        [ gwenview,                 [ kde ],            [] ],
-        [ ark,                      [ kde ],            [] ],
-        [ mpv,                      [ kde ],            [] ]
-    ]
+    let manifest = open arch.yml
     mut r = [core network sys base hardware ...$lang]
     if $container {
         $r ++= [container kubernetes]
@@ -177,7 +103,17 @@ def components [
         $r ++= [dev]
     }
     let r = $r | uniq
-    $manifest | filter {|x| $x.requires | all {|y| $y in $r } } | select name services
+    $manifest
+    | filter {|x|
+        $x.requires | all {|y| $y in $r }
+    }
+    | each {|x|
+        if ($x.type? | is-empty) {
+            { ...$x, type: sys }
+        } else {
+            $x
+        }
+    }
 }
 
 
