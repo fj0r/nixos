@@ -1,60 +1,43 @@
-### {{{ base.nu
-$env.comma_scope = {|_|{ created: '2024-07-06{6}09:51:58' }}
-$env.comma = {|_|{}}
-### }}}
-
-### {{{ 01_env.nu
-for e in [nuon toml yaml json] {
-    if ($".env.($e)" |  path exists) {
-        open $".env.($e)" | load-env
+const s = {
+    ssh: {
+        port: 7788
+        user: master
+        host: localhost
+        targetPort: 2222
     }
 }
-### }}}
 
-'ssh'
-| comma val null {
-    port: 7788
-    user: master
-    host: localhost
-    targetPort: 2222
-}
+export-env {
+    $env.s = {}
 
-'login'
-| comma val computed {|a,s,m| [
-    -o StrictHostKeyChecking=no
-    -o UserKnownHostsFile=/dev/null
-    -p $s.ssh.port
-    $"($s.ssh.user)@($s.ssh.host)"
-] }
+    $env.s.login = [
+        -o StrictHostKeyChecking=no
+        -o UserKnownHostsFile=/dev/null
+        -p $s.ssh.port
+        $"($s.ssh.user)@($s.ssh.host)"
+    ]
 
-'sync'
-| comma val computed {|a,s,m|
-    {
+    $env.s.sync = {
         args: [-avp --delete -e $'ssh -p ($s.ssh.port)']
         host: $"agent@localhost"
     }
 }
 
-'ssh'
-| comma fun {|a,s|
+export def 'ssh' [] {
     ^ssh ...$s.login
 }
 
-'wstunnel'
-| comma fun {|a,s|
+export def 'wstunnel' [] {
     for i in [
         'passwd'
         'curl http://file.s/wstunnel -O'
         'chmod +x wstunnel'
         $'./wstunnel client -R tcp://7788:localhost:($s.ssh.targetPort) ws://10.0.2.2:7787'
     ] { print $"(ansi grey)($i)(ansi reset)" }
-    wstunnel server ws://0.0.0.0:7787
+    ^wstunnel server ws://0.0.0.0:7787
 }
 
-'setup mount'
-| comma fun {|a,s,_|
-    let root = $a.0? | default '/dev/disk/by-label/nixos'
-    let boot = $a.1? | default '/dev/disk/by-label/boot'
+export def 'setup mount' [root?='/dev/disk/by-label/nixos' boot?='/dev/disk/by-label/boot'] {
     let cmd = [
         # 启用透明压缩参数挂载 root 子卷
         $"mount -o compress=zstd,subvol=@root ($root) /mnt"
@@ -73,16 +56,12 @@ for e in [nuon toml yaml json] {
     if ([y n] | input list 'continue?') == 'y' {
         $cmd | ^ssh ...$s.login 'sudo bash'
     }
-} {
-    cmp: {|a,s| [
-        '/dev/sda'
-        ] }
 }
 
-'setup partitions'
-| comma fun {|a,s,_|
-    let label = $a.0
-    let disk = $a.1? | default '/dev/sda'
+def cmpl-os [] {
+    [nixos arch]
+}
+export def 'setup partitions' [label:string@cmpl-os disk?='/dev/sda'] {
     let stmt = if $label == 'nixos' {
         [
             [$"btrfs subvolume create /mnt/@nix"]
@@ -139,18 +118,15 @@ for e in [nuon toml yaml json] {
     if ([y n] | input list 'continue?') == 'y' {
         $cmd | ^ssh ...$s.login 'sudo bash'
     }
-} {
-    cmp: {|a,s|
-        match ($a | length) {
-            1 => [nixos arch]
-            2 => [ '/dev/sda' ]
-        }
-    }
 }
 
-'setup channel'
-| comma fun {|a,s,_|
-    let host = $a.0? | default 'mirrors.ustc.edu.cn'
+def cmpl-mirror [] {
+    [
+        'mirrors.ustc.edu.cn'
+        'mirror.sjtu.edu.cn'
+    ]
+}
+export def 'setup channel' [host:string@cmpl-mirror] {
     let update = [
         # 订阅镜像仓库频道
         $"nix-channel --add https://($host)/nix-channels/nixpkgs-unstable nixpkgs"
@@ -168,17 +144,10 @@ for e in [nuon toml yaml json] {
     if ([y n] | input list 'update') == 'y' {
         $update | ^ssh ...$s.login 'sudo bash'
     }
-} {
-    cmp: {|a,s| [
-        'mirrors.ustc.edu.cn'
-        'mirror.sjtu.edu.cn'
-    ] }
 }
 
 
-'setup install'
-| comma fun {|a,s,_|
-    let host = $a.0? | default 'mirrors.ustc.edu.cn'
+export def 'setup install' [host:string@cmpl-mirror] {
     let update = [
         $"nixos-generate-config --root /mnt"
     ]
@@ -205,21 +174,13 @@ for e in [nuon toml yaml json] {
     if ([y n] | input list 'install') == 'y' {
         $install | ^ssh ...$s.login 'sudo bash'
     }
-} {
-    cmp: {|a,s| [
-        'mirrors.ustc.edu.cn'
-        'mirror.sjtu.edu.cn'
-    ] }
 }
 
-'setup fetch'
-| comma fun {|a,s,_|
+export def 'setup fetch' [] {
     rsync ...$s.sync.args $"($s.sync.host):/etc/nixos/" etc/
 }
 
-'setup sync'
-| comma fun {|a,s,_|
+export def 'setup sync' [] {
     rsync ...$s.sync.args etc/ $"($s.sync.host):nixos/"
     ^ssh ...$s.login 'sudo rsync -avp /home/agent/nixos/ /etc/nixos/'
-
 }
