@@ -85,7 +85,7 @@ binds {
     // 窗口切换（walker 直达 MRU 窗口菜单 menus:windowsmru；Alt 按住+数字选择）
     Alt+grave  { spawn "walker" "-m" "menus:windowsmru"; }
     // mudra web 控制台（只显示 mudra page；替代原 cwdhist 直达）
-    Mod+Space  { spawn "python3" "/home/master/world/mudra/mudra.py" "ui"; }
+    Mod+Space  { spawn "mudra" "ui"; }
 
     // 帮助：显示重要快捷键列表
     Mod+Shift+Slash { show-hotkey-overlay; }

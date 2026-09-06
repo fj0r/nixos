@@ -8,6 +8,7 @@
     ./units/laptop.nix
     ./units/networkmanager.nix
     ./units/walker.nix
+    ./units/mudra.nix
   ];
 
   # ── 通用桌面工具 ─────────────────────────────────────────

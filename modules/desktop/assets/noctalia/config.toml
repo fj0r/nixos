@@ -8,10 +8,14 @@ show_on_workspace_switch = false
 reserve_space = false   # 不预留排他区：弹出悬浮窗口上层，隐藏不留空条
 layer         = "top"   # 普通窗口之上
 # 左侧：保留默认 [launcher, wallpaper, workspaces]（含工作区指示器），其后追加 sysmon 折线图
-start  = ["workspaces", "taskbar", "sysmon-cpu", "sysmon-mem", "sysmon-download", "sysmon-upload"]
+#, "taskbar"
+start  = ["workspaces", "sysmon-cpu", "sysmon-mem", "sysmon-download", "sysmon-upload"]
 center = ["clock"]
 # 右侧：去掉 media（播放器控件），保留其余默认
 end = ["tray", "notifications", "clipboard", "network", "bluetooth", "volume", "brightness", "battery", "launcher", "wallpaper", "control-center", "session"]
+
+[widget.clock]
+format = "%m-%d %w %H:%M"
 
 # 壁纸：浏览目录（供选择器候选）+ 默认壁纸；fill_mode=crop 默认缩放覆盖
 [wallpaper]

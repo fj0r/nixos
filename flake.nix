@@ -44,9 +44,14 @@
       url = "git+https://github.com/orbsh/nvim-lua?shallow=1";
       flake = true;
     };
+
+    my-mudra-config = {
+      url = "git+https://github.com/orbsh/mudra?shallow=1";
+      flake = true;
+    };
   };
 
-  outputs = { self, nixpkgs, nixos-anywhere, nix2container, disko, home-manager, rust-overlay, my-nushell-config, my-nvim-config, my-emacs-config, ... }@inputs:
+  outputs = { self, nixpkgs, nixos-anywhere, nix2container, disko, home-manager, rust-overlay, my-nushell-config, my-nvim-config, my-emacs-config, my-mudra-config, ... }@inputs:
   let
     # ── 统一变量定义 ─────────────────────────────────────
     user = "master";
@@ -68,6 +73,8 @@
       nvimLocalPath = "/home/${user}/Configuration/nvim";
       emacsLocalPath = "/home/${user}/Configuration/emacs";
       emacsSrc = my-emacs-config.outPath;
+      mudraSrc = my-mudra-config.outPath;
+      mudraLocalPath = "/home/${user}/world/mudra";
       # 公共 DNS（地理位置相关：中国大陆）
       publicDnsServers = [ "223.5.5.5" "119.29.29.29" "1.1.1.1" ];
       # Nix substituter（全局，根据网络状况调整）
@@ -146,6 +153,8 @@
         nvimLocalPath = "/home/${user}/Configuration/nvim";
         emacsLocalPath = "/home/${user}/Configuration/emacs";
         emacsSrc = my-emacs-config.outPath;
+        mudraSrc = my-mudra-config.outPath;
+        mudraLocalPath = "/home/${user}/world/mudra";
         systemStateVersion = commonArgs.systemStateVersion;
         homeStateVersion = commonArgs.homeStateVersion;
       };
