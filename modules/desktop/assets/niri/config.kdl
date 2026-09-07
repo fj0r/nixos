@@ -85,15 +85,10 @@ binds {
     // 窗口切换（walker 直达 MRU 窗口菜单 menus:windowsmru；Alt 按住+数字选择）
     Alt+grave  { spawn "walker" "-m" "menus:windowsmru"; }
     // mudra web 控制台（只显示 mudra page；替代原 cwdhist 直达）
-    Mod+Space  { spawn "mudra" "ui"; }
+    Mod+Q  { spawn "mudra" "ui"; }
 
     // 帮助：显示重要快捷键列表
     Mod+Shift+Slash { show-hotkey-overlay; }
-
-    // 启动常用程序
-    Mod+Q   { spawn "ghostty"; }
-    Mod+W   { spawn "qutebrowser"; }
-    Mod+E   { spawn "neovide"; }
 
     // 关闭 / 退出
     Mod+Ctrl+Q  { close-window; }
@@ -158,7 +153,7 @@ binds {
     // 布局
     Mod+O      { toggle-overview; }
     Mod+I      { spawn-sh "noctalia msg bar-toggle"; }   // 临时显示/隐藏状态栏
-    Mod+U      { toggle-column-tabbed-display; }
+    Mod+W      { toggle-column-tabbed-display; }
     Mod+F      { maximize-column; }
     Mod+Shift+F { fullscreen-window; }
     Mod+M      { maximize-window-to-edges; }
