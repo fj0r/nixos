@@ -33,6 +33,12 @@ let
     exec ${srcDir}/.venv/bin/hermes "$@"
   '';
 
+  # 2. `oi` 固定为 hermes 的别名（原 open-interpreter symlink，OI 已移除后回收此快捷键）
+  oi-alias = pkgs.runCommand "oi-alias" {} ''
+    mkdir -p $out/bin
+    ln -s ${hermes-cli}/bin/hermes $out/bin/oi
+  '';
+
 in {
   # 注册全局命令与库
   environment.systemPackages = [
@@ -40,6 +46,7 @@ in {
     pkgs.git
     pkgs.stdenv.cc.cc.lib
     hermes-cli
+    oi-alias
   ];
 
   # 服务公共的基础环境配置项（作为共享模板，不直接实例化）
