@@ -2,7 +2,6 @@
 
   # ── 桌面终端工具 ──────────────────────────────────────────────
   home.packages = with pkgs; [
-    zellij   # 终端复用（Ghostty 启动时自动 attach）
     neovide  # Neovim GUI（亚像素渲染 + 物理微动画）
   ];
 
@@ -21,10 +20,10 @@
   programs.ghostty = {
     enable = true;
     settings = {
-      theme                 = "Arthur";
+      theme                 = "Gruvbox Light";
       font-family           = "Lilex";
       font-style            = "Regular";
-      font-size             = 11;
+      font-size             = 13;
       # background-opacity    = 0.8;
       shell-integration     = "none";
       window-padding-x      = 2;
@@ -32,7 +31,6 @@
       window-height         = 40;
       window-width          = 120;
       window-decoration     = false;
-      command               = "${pkgs.zellij}/bin/zellij attach --create X";
       keybind = [
         "clear"
         "ctrl+shift+comma=reload_config"

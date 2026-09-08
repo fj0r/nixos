@@ -17,6 +17,8 @@
     imports = [
       ./units/home-terminals.nix
       ./units/home-xdg.nix
+      # ./units/zellij.nix      # Zellij 终端复用（未引入）
+      ./units/herdr.nix         # herdr 终端复用
     ];
   };
 }
