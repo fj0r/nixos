@@ -29,8 +29,7 @@ let
     # 注入全局动态链接库路径
     export LD_LIBRARY_PATH="${ldLibraryPath}:$LD_LIBRARY_PATH"
 
-    cd ${srcDir}
-    exec ${srcDir}/.venv/bin/hermes "$@"
+    exec ${srcDir}/.venv/bin/hermes --no-restore-cwd "$@"
   '';
 
   # 2. `oi` 固定为 hermes 的别名（原 open-interpreter symlink，OI 已移除后回收此快捷键）
