@@ -30,8 +30,8 @@
     # 新窗口/面板默认打开 nushell
     default_shell = "nu"
 
-    # 新面板落点 = herdr 启动目录（如 ~/Configuration/nixos），非来源面板 cwd
-    new_cwd = "current"
+    # 新面板继承当前激活面板的 cwd（agent 在项目里改文件，开 panel 即在项目里 git diff）
+    new_cwd = "follow"
 
     [ui]
     # tmux 风格：面板间共享分隔线，无独立边框和外框
