@@ -31,6 +31,15 @@ provider = "menus:cwdhist"
 prefix = "【"
 provider = "menus:cwdhist2"
 
+# ── herdr workspace 菜单直达：] / 】一键到 workspace 切换 ──
+[[providers.prefixes]]
+prefix = "]"
+provider = "menus:herdr"
+
+[[providers.prefixes]]
+prefix = "】"
+provider = "menus:herdr2"
+
 # ── cwdhist2（【 前缀的别名菜单）打开方式，与 menus:cwdhist 同构 ──
 [[providers.actions."menus:cwdhist2"]]
 action = "open_neovide"

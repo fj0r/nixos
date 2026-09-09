@@ -48,6 +48,7 @@ in
     xdg.configFile."elephant/menus/cwdhist2.lua".source = ../assets/elephant/menus/cwdhist2.lua;
     xdg.configFile."elephant/menus/windowsmru.lua".source = ../assets/elephant/menus/windowsmru.lua;
     xdg.configFile."elephant/menus/herdr.lua".source = ../assets/elephant/menus/herdr.lua;
+    xdg.configFile."elephant/menus/herdr2.lua".source = ../assets/elephant/menus/herdr2.lua;
 
     systemd.user.services.walker = {
       Unit = {

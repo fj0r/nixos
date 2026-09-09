@@ -44,6 +44,10 @@
 
     # workspace 只有一个标签页时隐藏顶栏
     hide_tab_bar_when_single_tab = true
+
+    # agent 完成时直发桌面通知（Noctalia 弹出；回跳靠 win+space 菜单）
+    [ui.toast]
+    delivery = "system"
   '';
 
   # ── Ghostty 默认启动 herdr ────────────────────────────────────
