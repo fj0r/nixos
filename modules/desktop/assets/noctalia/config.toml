@@ -21,7 +21,7 @@ format = "%m-%d %w %H:%M"
 [wallpaper]
 enabled   = true
 fill_mode = "crop"
-directory = "/home/master/Pictures/wallpaper"
+directory = "~/Pictures/wallpaper"
 
 # 去掉浮动面板（含 launcher）的描边；shadow 还原
 [shell.panel]
