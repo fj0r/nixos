@@ -1,19 +1,19 @@
--- elephant 菜单：herdr workspace 列表
--- 数据来自 python herdr.py（herdr workspace list，focused 置顶标 *）
+-- elephant 菜单：herdr agent 列表
+-- 数据来自 python herdr.py agents（agent 名·cwd 短名，状态×cwd 短名副标题，focused 排末位）
 Name = "herdr"
-NamePretty = "Hermes 工作区"
-Icon = "layout-tab"
-Description = "herdr workspace 切换（回车 focus）"
+NamePretty = "Hermes agents"
+Icon = "user-avatars"
+Description = "herdr agent 切换（回车 focus 该 agent 所在 pane）"
 SearchName = true
 FixedOrder = true
-Keywords = { "herdr", "workspace", "工作区", "切换" }
+Keywords = { "herdr", "agent", "切换" }
 
--- 默认 action：focus 该 workspace
-Action = "herdr workspace focus %VALUE%"
+-- 默认 action：先 niri 聚焦 Ghostty 窗口，再 herdr focus 该 agent
+Action = "python3 ~/.config/elephant/scripts/herdr-focus.py agent %VALUE%"
 
 function GetEntries(query)
     local script = (os.getenv("HOME") or "~") .. "/.config/elephant/scripts/herdr.py"
-    local handle = io.popen("python3 " .. script .. " list " .. tostring(query or ""))
+    local handle = io.popen("python3 " .. script .. " agents " .. tostring(query or ""))
     if not handle then return {} end
     local entries = {}
     for line in handle:lines() do

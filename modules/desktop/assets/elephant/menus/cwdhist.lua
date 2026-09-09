@@ -18,7 +18,7 @@ Action = Bump .. "bash -c 'cd \"%VALUE%\" && neovide --maximized --vsync'"
 -- 按键映射在 walker 的 [providers.actions.\"menus:cwdhist\"] 里定义（Enter / ctrl t / ctrl f）
 local OPEN_ACTIONS = {
   open_neovide   = Bump .. "bash -c 'cd \"%VALUE%\" && neovide --maximized --vsync'",
-  open_alacritty = Bump .. "alacritty --working-directory '%VALUE%'",
+  open_herdr     = Bump .. "herdr workspace create --cwd '%VALUE%' --focus",
   open_cosmic    = Bump .. "cosmic-files '%VALUE%'",
 }
 

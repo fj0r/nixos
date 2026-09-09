@@ -16,25 +16,24 @@ quick_activate = ["alt 1", "alt 2", "alt 3", "alt 4", "alt 5", "alt 6", "alt 7",
 # action 名与 elephant cwdhist.lua 的 OPEN_ACTIONS 键一致
 [providers.actions]
 "menus:cwdhist" = [
-  { action = "open_neovide",    label = "用 neovide 打开",       bind = "Return", default = true, after = "Close" },
-  { action = "open_alacritty",  label = "用 alacritty 打开",     bind = "ctrl t",               after = "Close" },
+  { action = "open_herdr",      label = "用 herdr 打开",         bind = "Return", default = true, after = "Close" },
+  { action = "open_neovide",    label = "用 neovide 打开",       bind = "ctrl n",               after = "Close" },
   { action = "open_cosmic",     label = "用 cosmic-files 打开",  bind = "ctrl f",               after = "Close" },
 ]
 
-# ── cwd 历史菜单直达：打 [ 一键到"最近目录"（menus:cwdhist），如 / 之于 files ──
-# merge 对 provider 匹配：menus:cwdhist 不在默认前缀表 → 追加，不覆盖 / ; 等默认
+# ── 菜单直达前缀：[ → herdr agents，] → 最近目录（cwdhist），】→ herdr workspaces ──
+# 全角【/】走 cwdhist2/herdr2 别名 provider（merge 按 provider 键控，一 provider 一 prefix）
 [[providers.prefixes]]
 prefix = "["
+provider = "menus:herdr"
+
+[[providers.prefixes]]
+prefix = "]"
 provider = "menus:cwdhist"
 
 [[providers.prefixes]]
 prefix = "【"
 provider = "menus:cwdhist2"
-
-# ── herdr workspace 菜单直达：] / 】一键到 workspace 切换 ──
-[[providers.prefixes]]
-prefix = "]"
-provider = "menus:herdr"
 
 [[providers.prefixes]]
 prefix = "】"
@@ -42,16 +41,16 @@ provider = "menus:herdr2"
 
 # ── cwdhist2（【 前缀的别名菜单）打开方式，与 menus:cwdhist 同构 ──
 [[providers.actions."menus:cwdhist2"]]
-action = "open_neovide"
-label = "用 neovide 打开"
+action = "open_herdr"
+label = "用 herdr 打开"
 bind = "Return"
 default = true
 after = "Close"
 
 [[providers.actions."menus:cwdhist2"]]
-action = "open_alacritty"
-label = "用 alacritty 打开"
-bind = "ctrl t"
+action = "open_neovide"
+label = "用 neovide 打开"
+bind = "ctrl n"
 after = "Close"
 
 [[providers.actions."menus:cwdhist2"]]
