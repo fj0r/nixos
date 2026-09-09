@@ -43,9 +43,11 @@ in
     # ── elephant：menus 提供者（@ 前缀 · Lua→python 数据脚本，TAB 分隔桥）──
     xdg.configFile."elephant/scripts/cwdhist.py".source = ../assets/elephant/scripts/cwdhist.py;
     xdg.configFile."elephant/scripts/windowsmru.py".source = ../assets/elephant/scripts/windowsmru.py;
+    xdg.configFile."elephant/scripts/herdr.py".source = ../assets/elephant/scripts/herdr.py;
     xdg.configFile."elephant/menus/cwdhist.lua".source = ../assets/elephant/menus/cwdhist.lua;
     xdg.configFile."elephant/menus/cwdhist2.lua".source = ../assets/elephant/menus/cwdhist2.lua;
     xdg.configFile."elephant/menus/windowsmru.lua".source = ../assets/elephant/menus/windowsmru.lua;
+    xdg.configFile."elephant/menus/herdr.lua".source = ../assets/elephant/menus/herdr.lua;
 
     systemd.user.services.walker = {
       Unit = {

@@ -3,6 +3,7 @@
   environment.systemPackages = with pkgs; [
     # 终端增强
     glow        # markdown 渲染
+    skim        # 模糊选择器（herdr open-project picker）
 
     # 编辑器（访客/root 可用）
     neovim      # 通用编辑器，各机器均有

@@ -11,7 +11,7 @@
     prefix = "alt+s"
 
     # Zellij 风格：高频动作免 prefix，ctrl+alt+单键直接触发
-    goto = ["prefix+o", "ctrl+alt+o"]              # workspace picker
+    goto = ["prefix+o", "ctrl+alt+o"]              # workspace picker（win+a → walker 菜单也有一份）
     focus_pane_left = ["prefix+h", "ctrl+alt+h"]
     focus_pane_down = ["prefix+j", "ctrl+alt+j"]
     focus_pane_up = ["prefix+k", "ctrl+alt+k"]
@@ -38,6 +38,9 @@
     pane_borders = false
     pane_outer_borders = false
     pane_gaps = false
+
+    # 鼠标：拖拽调分屏边界 + 滚轮滚动；pane 内应用请求鼠标时仍归应用
+    mouse_capture = true
 
     # workspace 只有一个标签页时隐藏顶栏
     hide_tab_bar_when_single_tab = true

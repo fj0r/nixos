@@ -84,6 +84,8 @@ binds {
     Alt+Space  { spawn "gapplication" "launch" "dev.benz.walker"; }
     // 窗口切换（walker 直达 MRU 窗口菜单 menus:windowsmru；Alt 按住+数字选择）
     Alt+grave  { spawn "walker" "-m" "menus:windowsmru"; }
+    // herdr workspace 切换（walker 直达 menus:herdr，回车 focus）
+    Mod+Space  { spawn "walker" "-m" "menus:herdr"; }
     // mudra web 控制台（只显示 mudra page；替代原 cwdhist 直达）
     Mod+Q  { spawn "mudra" "ui"; }
 
