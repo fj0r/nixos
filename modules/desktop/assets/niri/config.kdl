@@ -50,6 +50,14 @@ window-rule {
     default-window-height { fixed 920; }
 }
 
+// 常用大窗口应用：打开即全宽
+window-rule {
+    match app-id="vivaldi-stable"
+    match app-id="neovide"
+    match app-id="com.mitchellh.ghostty"
+    open-maximized true
+}
+
 // ---------------------------------------------------------------------------
 // 最近窗口切换（Alt-Tab，niri 内置单行）
 // ---------------------------------------------------------------------------
@@ -81,11 +89,11 @@ hotkey-overlay {
 // ---------------------------------------------------------------------------
 binds {
     // 应用启动器：walker（常驻 gapplication service，D-Bus 唤起；D-Bus app id = dev.benz.walker）
-    Alt+Space  { spawn "gapplication" "launch" "dev.benz.walker"; }
+    Mod+Space  { spawn "gapplication" "launch" "dev.benz.walker"; }
     // 窗口切换（walker 直达 MRU 窗口菜单 menus:windowsmru；Alt 按住+数字选择）
     Alt+grave  { spawn "walker" "-m" "menus:windowsmru"; }
     // herdr workspace 切换（walker 直达 menus:herdr，回车 focus）
-    Mod+Space  { spawn "walker" "-m" "menus:herdr"; }
+    Alt+Space  { spawn "walker" "-m" "menus:herdr"; }
     // mudra web 控制台（只显示 mudra page；替代原 cwdhist 直达）
     Mod+Q  { spawn "mudra" "ui"; }
 
@@ -93,7 +101,7 @@ binds {
     Mod+Shift+Slash { show-hotkey-overlay; }
 
     // 关闭 / 退出
-    Mod+Ctrl+Q  { close-window; }
+    Mod+Ctrl+C  { close-window; }
     Mod+Shift+E { quit; }
     // 手动锁屏（Noctalia 锁屏 UI）
     Mod+Shift+Z { spawn-sh "noctalia msg session lock"; }

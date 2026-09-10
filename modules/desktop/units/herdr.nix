@@ -48,6 +48,10 @@
     # agent 完成时直发桌面通知（Noctalia 弹出；回跳靠 win+space 菜单）
     [ui.toast]
     delivery = "system"
+
+    # 状态提示音（内置音：完成 / 需要审批各一）
+    [ui.sound]
+    enabled = true
   '';
 
   # ── Ghostty 默认启动 herdr ────────────────────────────────────

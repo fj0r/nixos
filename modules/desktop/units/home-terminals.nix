@@ -26,6 +26,8 @@
       font-size             = 13;
       # background-opacity    = 0.8;
       shell-integration     = "none";
+      # 整窗关闭不弹确认（Ghostty 默认开；herdr 场景直接退出无影响）
+      confirm-close-surface = false;
       window-padding-x      = 2;
       window-padding-y      = 0;
       window-height         = 40;
