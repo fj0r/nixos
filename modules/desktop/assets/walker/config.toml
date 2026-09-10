@@ -21,16 +21,16 @@ quick_activate = ["alt 1", "alt 2", "alt 3", "alt 4", "alt 5", "alt 6", "alt 7",
   { action = "open_cosmic",     label = "用 cosmic-files 打开",  bind = "ctrl f",               after = "Close" },
 ]
 
-# ── 菜单直达前缀：[ → 最近目录（cwdhist），] → herdr workspaces（spaces）──
-# herdr agents 不占前缀，仅 Win+Space（niri Mod+Space 直达 menus:herdr）
-# 全角【/】走 cwdhist2/herdr2 别名 provider（merge 按 provider 键控，一 provider 一 prefix）
+# ── 菜单直达前缀：[ → 最近目录（cwdhist），] → herdr（agents+spaces 合并菜单）──
+# herdr 菜单同时走 Win+Space（niri Mod+Space 直达 menus:herdr）
+# 全角【走 cwdhist2 别名 provider（merge 按 provider 键控，一 provider 一 prefix）
 [[providers.prefixes]]
 prefix = "["
 provider = "menus:cwdhist"
 
 [[providers.prefixes]]
 prefix = "]"
-provider = "menus:herdr2"
+provider = "menus:herdr"
 
 [[providers.prefixes]]
 prefix = "【"

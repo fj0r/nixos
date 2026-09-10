@@ -2,8 +2,8 @@
 """walker herdr 菜单的 focus 动作：先把 Ghostty 窗口带到前台（niri），再 herdr focus。
 
 用法：
-  herdr-focus agent <pane_id>       # herdr agent focus（agents 菜单）
-  herdr-focus workspace <ws_id>     # herdr workspace focus（workspaces 菜单）
+  herdr-focus <value>     # value = "agent:<pane_id>" 或 "workspace:<ws_id>"
+                          # （herdr.py 合并菜单输出的 value）
 
 为什么需要 niri 前置：herdr focus 只切 herdr 内部 pane；若 Ghostty 窗口本身
 不在前台，用户看到的还是别的窗口。先 `niri msg action focus-window` 把
@@ -33,19 +33,20 @@ def focus_ghostty_window():
 
 
 def main():
-    if len(sys.argv) < 3:
-        sys.exit("usage: herdr-focus agent <pane_id> | herdr-focus workspace <ws_id>")
-    kind, target = sys.argv[1], sys.argv[2]
+    if len(sys.argv) != 2:
+        sys.exit('usage: herdr-focus agent:<pane_id> | herdr-focus workspace:<ws_id>')
+    value = sys.argv[1]
+    kind, _, target = value.partition(":")
+    if kind not in ("agent", "workspace") or not target:
+        sys.exit(f"invalid value: {value}")
     focus_ghostty_window()
     herdr = shutil.which("herdr")
     if not herdr:
         sys.exit("herdr not found in PATH")
     if kind == "agent":
         subprocess.run([herdr, "agent", "focus", target])
-    elif kind == "workspace":
-        subprocess.run([herdr, "workspace", "focus", target])
     else:
-        sys.exit(f"unknown kind: {kind}")
+        subprocess.run([herdr, "workspace", "focus", target])
 
 
 if __name__ == "__main__":
