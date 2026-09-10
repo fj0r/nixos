@@ -5,16 +5,18 @@
   agents <query>  合并列表：agent 在前（herdr agent list），其后是未被任何
                   agent 占用的 workspace（herdr workspace list 按 workspace_id
                   去重）。TAB 四列：
-                  <label> <TAB> <状态 × cwd短名/git状态> <TAB> <value> <TAB> <状态>
+                  <label> <TAB> <git符号状态 -- [<agent>] -- <状态>> <TAB> <value> <TAB> <状态>
                   排序：blocked → done → working → 其余，组内 focused 的（"* " 前缀）排同组末位。
-                  agent label = agent 名 + workspace label（如 hermes·nixos）；
-                  agent 的 value = "agent:<pane_id>"，空 workspace 的 value = "workspace:<id>"。
+                  agent 行 label = cwd 短名，agent 类型放副标题 <hermes>；
+                  空 workspace 的 label = workspace label，无 <agent> 段。
+                  git 符号：↓落后 ↑领先 +新增 -删除 ~修改（clean 只显示分支名，非 git 省略）。
 
 Action 用 value 精确 focus（前缀区分 agent/workspace），避免同名 label 歧义。
 elephant 常驻进程 env 无 shell alias，herdr 走 PATH 查找。
 仅用 Python 标准库（json/subprocess），外部依赖 herdr 命令。
 """
 import json
+import re
 import shutil
 import subprocess
 import sys
@@ -34,17 +36,48 @@ def _run_herdr(*args):
 
 
 def git_status(path):
-    """短 git 状态：'分支 dirty+2' / '分支 clean' / ''（非 git 目录）。"""
-    r = subprocess.run(["git", "-C", path, "status", "--porcelain"],
+    """短 git 状态：'分支 ↓1↑1+1-2~3' / '分支' / ''（非 git 目录）。
+
+    符号：↓ 落后 upstream、↑ 领先 upstream、+ 暂存新增、- 暂存删除、
+    ~ 暂存修改、+N/-N/~N 为对应计数（工作区改动按同样符号小写后缀区分在
+    porcelain 两列里，这里合并计数）。
+    """
+    r = subprocess.run(["git", "-C", path, "status", "--porcelain=v1", "-b"],
                        capture_output=True, text=True, timeout=5)
     if r.returncode != 0:
         return ""
     b = subprocess.run(["git", "-C", path, "branch", "--show-current"],
                        capture_output=True, text=True, timeout=5)
     branch = b.stdout.strip()
-    lines = [l for l in r.stdout.splitlines() if l.strip()]
-    state = "clean" if not lines else f"dirty+{len(lines)}"
-    return f"{branch} {state}" if branch else state
+    counts = {"↓": 0, "↑": 0, "+": 0, "-": 0, "~": 0}
+    first = True
+    for line in r.stdout.splitlines():
+        if first:  # 首行 ## 分支信息，含 ahead/behind
+            first = False
+            m = re.search(r"ahead (\d+)", line)
+            if m:
+                counts["↑"] += int(m.group(1))
+            m = re.search(r"behind (\d+)", line)
+            if m:
+                counts["↓"] += int(m.group(1))
+            continue
+        if not line.strip():
+            continue
+        x, y = line[0], line[1]  # X=暂存区状态，Y=工作区状态
+        if x in "A?":
+            counts["+"] += 1
+        elif x == "D":
+            counts["-"] += 1
+        elif x in "MRT":
+            counts["~"] += 1
+        if y == "A":
+            counts["+"] += 1
+        elif y == "D":
+            counts["-"] += 1
+        elif y in "MRT":
+            counts["~"] += 1
+    symbols = "".join(f"{k}{v}" for k, v in counts.items() if v)
+    return f"{branch} {symbols}".strip()
 
 
 # 状态分组：blocked 最前，其次 done，再次 working，其余在后
@@ -60,10 +93,14 @@ def list_agents(query):
     rows = []
     for a in agents:
         cwd_short = (a.get("cwd") or "?").rstrip("/").split("/")[-1]
-        sub = f"{a.get('agent_status') or 'unknown'} × {cwd_short}"
+        # 两行格式：第一行 = 名字 <agent 类型>（无类型省略），第二行 = 状态 - git
         mark = "* " if a.get("focused") else ""
-        text = f"{mark}{a.get('agent')}·{cwd_short}"
-        rows.append((text, sub, f"agent:{a.get('pane_id')}",
+        a_type = a.get("agent")
+        text = f"{mark}{cwd_short}" + (f" <{a_type}>" if a_type else "")
+        sub = " -- ".join(s for s in [a.get("agent_status") or "unknown",
+                                     git_status(a.get("cwd") or "")] if s)
+        rows.append((text, sub,
+                     f"agent:{a.get('pane_id')}",
                      a.get("agent_status") or "unknown"))
     # 未被 agent 占用的 workspace（去重：agent 已占用的跳过）；
     # cwd 从 pane list 反查（无 agent 的 workspace 只有 pane）
@@ -74,12 +111,9 @@ def list_agents(query):
             if ws.get("workspace_id") in occupied:
                 continue
             status = ws.get("agent_status") or "unknown"
-            sub = [status]
-            git = git_status(_ws_cwd(ws, panes))
-            if git:
-                sub.append(git)
+            sub = " -- ".join(s for s in [status, git_status(_ws_cwd(ws, panes))] if s)
             mark = "* " if ws.get("focused") else ""
-            rows.append((f"{mark}{ws['label']}", " × ".join(sub),
+            rows.append((f"{mark}{ws['label']}", sub,
                          f"workspace:{ws['workspace_id']}", status))
     _emit(rows, query)
 
