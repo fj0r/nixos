@@ -34,15 +34,17 @@ def _run_herdr(*args):
 
 
 def git_status(path):
-    """短 git 状态：'dirty +2/-1' / 'clean' / ''（非 git）。"""
+    """短 git 状态：'分支 dirty+2' / '分支 clean' / ''（非 git 目录）。"""
     r = subprocess.run(["git", "-C", path, "status", "--porcelain"],
                        capture_output=True, text=True, timeout=5)
     if r.returncode != 0:
         return ""
+    b = subprocess.run(["git", "-C", path, "branch", "--show-current"],
+                       capture_output=True, text=True, timeout=5)
+    branch = b.stdout.strip()
     lines = [l for l in r.stdout.splitlines() if l.strip()]
-    if not lines:
-        return "clean"
-    return f"dirty +{len(lines)}"
+    state = "clean" if not lines else f"dirty+{len(lines)}"
+    return f"{branch} {state}" if branch else state
 
 
 # 状态分组：blocked 最前，其次 done，再次 working，其余在后
