@@ -1,6 +1,6 @@
-|-- elephant 菜单：herdr agents + spaces 合并列表
-|-- 数据来自 python herdr.py（agents 在前，未被 agent 占用的 workspace 补在后，
-|-- 状态×cwd/git 状态副标题，focused 排同组末位）
+-- elephant 菜单：herdr agents + spaces 合并列表
+-- 数据来自 python herdr.py（agents 在前，未被 agent 占用的 workspace 补在后，
+-- 状态×cwd/git 状态副标题，focused 排同组末位）
 Name = "herdr"
 NamePretty = "Hermes agents"
 Icon = "user-avatars"
@@ -9,7 +9,7 @@ SearchName = true
 FixedOrder = true
 Keywords = { "herdr", "agent", "切换" }
 
-|-- 默认 action：先 niri 聚焦 Ghostty 窗口，再按 value 前缀 herdr focus
+-- 默认 action：先 niri 聚焦 Ghostty 窗口，再按 value 前缀 herdr focus
 Action = "python3 ~/.config/elephant/scripts/herdr-focus.py %VALUE%"
 
 function GetEntries(query)

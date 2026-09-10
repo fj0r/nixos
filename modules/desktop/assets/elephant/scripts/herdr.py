@@ -63,15 +63,17 @@ def list_agents(query):
         text = f"{mark}{a.get('agent')}·{cwd_short}"
         rows.append((text, sub, f"agent:{a.get('pane_id')}",
                      a.get("agent_status") or "unknown"))
-    # 未被 agent 占用的 workspace（去重：agent 已占用的跳过）
+    # 未被 agent 占用的 workspace（去重：agent 已占用的跳过）；
+    # cwd 从 pane list 反查（无 agent 的 workspace 只有 pane）
     ws_data = _run_herdr("workspace", "list")
+    panes = _pane_cwd_map()
     if ws_data is not None:
         for ws in (ws_data.get("result") or {}).get("workspaces") or []:
             if ws.get("workspace_id") in occupied:
                 continue
             status = ws.get("agent_status") or "unknown"
             sub = [status]
-            git = git_status(_ws_cwd(ws, agents))
+            git = git_status(_ws_cwd(ws, panes))
             if git:
                 sub.append(git)
             mark = "* " if ws.get("focused") else ""
@@ -80,12 +82,23 @@ def list_agents(query):
     _emit(rows, query)
 
 
-def _ws_cwd(ws, agents):
-    """workspace → 代表性 cwd：取该 workspace 首个 agent 的 cwd（失败则退回 label）。"""
-    for a in agents:
-        if a.get("workspace_id") == ws.get("workspace_id"):
-            return a.get("cwd") or ws.get("label")
-    return ws.get("label")
+def _pane_cwd_map():
+    """workspace_id → 首个 pane 的 cwd（pane list 每项都有 cwd，覆盖无 agent 的 workspace）。"""
+    data = _run_herdr("pane", "list")
+    if data is None:
+        return {}
+    cwd_map = {}
+    for p in (data.get("result") or {}).get("panes") or []:
+        ws = p.get("workspace_id")
+        cwd = p.get("cwd")
+        if ws and cwd and ws not in cwd_map:
+            cwd_map[ws] = cwd
+    return cwd_map
+
+
+def _ws_cwd(ws, cwd_map):
+    """workspace → 代表性 cwd（pane 反查；失败退回 label）。"""
+    return cwd_map.get(ws.get("workspace_id")) or ws.get("label")
 
 
 def _emit(rows, query):
