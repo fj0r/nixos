@@ -6,6 +6,12 @@
 
   # ── herdr 配置 ────────────────────────────────────────────────
   xdg.configFile."herdr/config.toml".text = ''
+    # 关闭首次启动的 onboarding 设置弹窗（config 是只读 symlink，界面里保存不了）
+    onboarding = false
+
+    [theme]
+    name = "gruvbox-light"
+
     [keys]
     # 前缀键：Alt+s（保留作备份，高频动作走免 prefix 直接 chord）
     prefix = "alt+s"
@@ -41,6 +47,9 @@
 
     # 鼠标：拖拽调分屏边界 + 滚轮滚动；pane 内应用请求鼠标时仍归应用
     mouse_capture = true
+
+    # agent 状态用静态图标（非色点）：blocked/working/done/idle 各异
+    status_indicators = "symbols"
 
     # workspace 只有一个标签页时隐藏顶栏
     hide_tab_bar_when_single_tab = true
