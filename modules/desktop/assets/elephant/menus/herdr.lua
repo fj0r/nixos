@@ -10,7 +10,8 @@ FixedOrder = true
 Keywords = { "herdr", "agent", "切换" }
 
 -- 默认 action：先 niri 聚焦 Ghostty 窗口，再按 value 前缀 herdr focus
-Action = "python3 ~/.config/elephant/scripts/herdr-focus.py %VALUE%"
+-- 包 bash -c：elephant 执行 action 不经 shell，裸命令的 ~ 不展开会静默失败
+Action = "bash -c 'python3 ~/.config/elephant/scripts/herdr-focus.py \"%VALUE%\"'"
 
 function GetEntries(query)
     local script = (os.getenv("HOME") or "~") .. "/.config/elephant/scripts/herdr.py"

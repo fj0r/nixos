@@ -43,7 +43,18 @@ def mru_touch(value):
 
 
 def focus_ghostty_window():
-    r = subprocess.run(["niri", "msg", "--json", "windows"], capture_output=True, text=True)
+    # NIRI_SOCKET 自举：elephant 常驻进程 env 里没有该变量（继承自 systemd 而非
+    # niri 会话），依赖继承环境会静默失败。同 windowsmru.lua 的做法，按
+    # /run/user/$UID/niri.wayland-*.sock 自举（多实例取第一个）。
+    env = dict(os.environ)
+    if "NIRI_SOCKET" not in env:
+        import glob
+        socks = sorted(glob.glob(f"/run/user/{os.getuid()}/niri.wayland-*.sock"))
+        if not socks:
+            return
+        env["NIRI_SOCKET"] = socks[0]
+    r = subprocess.run(["niri", "msg", "--json", "windows"],
+                       capture_output=True, text=True, env=env)
     if r.returncode != 0:
         return
     try:
@@ -53,7 +64,7 @@ def focus_ghostty_window():
     for w in wins:
         if w.get("app_id") == GHOSTTY_APP_ID:
             subprocess.run(["niri", "msg", "action", "focus-window", "--id", str(w["id"])],
-                           capture_output=True)
+                           capture_output=True, env=env)
             return
 
 
@@ -68,10 +79,16 @@ def main():
     herdr = shutil.which("herdr")
     if not herdr:
         sys.exit("herdr not found in PATH")
+    # herdr 0.9 multi-client：agent.focus 只更新 server 焦点/seen 标记，不驱动
+    # client 视图；画面跟随 workspace.focus 事件。故 agent 跳转 = agent.focus
+    # （焦点落到 agent pane）+ workspace.focus（驱动画面切过去）两步。
+    # workspace 跳转单独一步即可。
     if kind == "agent":
-        r = subprocess.run([herdr, "agent", "focus", target])
+        ws_id = target.split(":")[0]
+        subprocess.run([herdr, "agent", "focus", target], capture_output=True)
+        r = subprocess.run([herdr, "workspace", "focus", ws_id], capture_output=True)
     else:
-        r = subprocess.run([herdr, "workspace", "focus", target])
+        r = subprocess.run([herdr, "workspace", "focus", target], capture_output=True)
     if r.returncode == 0:
         mru_touch(value)
 
