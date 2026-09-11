@@ -161,13 +161,14 @@ def _emit(rows, query):
     if query:
         q = query.lower()
         rows = [r for r in rows if q in r[0].lower() or q in r[1].lower()]
-    # 排序：状态分组（done/blocked 优先，_STATUS_RANK）→ 组内 MRU（最近使用
-    # 在前，从未用过的垫底）→ focused 排组内末位
+    # 排序：状态分组（done/blocked 优先，_STATUS_RANK）→ 组内 focused 排末位
+    # → MRU（最近使用在前，从未用过的垫底）。focused 先于 MRU：刚跳转过的
+    # workspace MRU 最新，否则会排到最前。
     mru = _mru_order()
     rows.sort(key=lambda r: (0 if r[3] in ("done", "blocked") else 1,
                              _STATUS_RANK.get(r[3], 3),
-                             mru.get(r[2], len(mru)),
-                             r[0].startswith("* ")))
+                             r[0].startswith("* "),
+                             mru.get(r[2], len(mru))))
     for text, subtext, value, _status in rows:
         print(f"{text}\t{subtext}\t{value}")
 
