@@ -10,11 +10,36 @@
 Ghostty 提到前台，herdr 内部切换才有可见效果。
 """
 import json
+import os
 import shutil
+import sqlite3
 import subprocess
 import sys
+import time
 
 GHOSTTY_APP_ID = "com.mitchellh.ghostty"  # niri windows 里 ghostty 的 app-id（实测）
+
+MRU_DB = os.path.join(os.environ.get("XDG_CACHE_HOME",
+                                      os.path.expanduser("~/.cache")),
+                      "herdr-menu", "mru.db")
+
+
+def mru_touch(value):
+    """记录一次跳转（MRU）：upsert value 的时间戳。失败静默（MRU 是纯增益）。"""
+    try:
+        os.makedirs(os.path.dirname(MRU_DB), exist_ok=True)
+        conn = sqlite3.connect(MRU_DB)
+        conn.execute("PRAGMA journal_mode=WAL")
+        conn.execute("""CREATE TABLE IF NOT EXISTS mru(
+                          value TEXT PRIMARY KEY,
+                          ts REAL NOT NULL)""")
+        conn.execute("""INSERT INTO mru(value, ts) VALUES(?, ?)
+                          ON CONFLICT(value) DO UPDATE SET ts=excluded.ts""",
+                     (value, time.time()))
+        conn.commit()
+        conn.close()
+    except sqlite3.Error:
+        pass
 
 
 def focus_ghostty_window():
@@ -44,9 +69,11 @@ def main():
     if not herdr:
         sys.exit("herdr not found in PATH")
     if kind == "agent":
-        subprocess.run([herdr, "agent", "focus", target])
+        r = subprocess.run([herdr, "agent", "focus", target])
     else:
-        subprocess.run([herdr, "workspace", "focus", target])
+        r = subprocess.run([herdr, "workspace", "focus", target])
+    if r.returncode == 0:
+        mru_touch(value)
 
 
 if __name__ == "__main__":

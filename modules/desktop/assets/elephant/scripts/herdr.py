@@ -16,10 +16,16 @@ elephant 常驻进程 env 无 shell alias，herdr 走 PATH 查找。
 仅用 Python 标准库（json/subprocess），外部依赖 herdr 命令。
 """
 import json
+import os
 import re
 import shutil
+import sqlite3
 import subprocess
 import sys
+
+MRU_DB = os.path.join(os.environ.get("XDG_CACHE_HOME",
+                                      os.path.expanduser("~/.cache")),
+                      "herdr-menu", "mru.db")
 
 
 def _run_herdr(*args):
@@ -137,12 +143,30 @@ def _ws_cwd(ws, cwd_map):
     return cwd_map.get(ws.get("workspace_id")) or ws.get("label")
 
 
+def _mru_order():
+    """value → MRU 序号（最近使用的最小）。库缺失/损坏返回空表，全部垫底。"""
+    try:
+        conn = sqlite3.connect(f"file:{MRU_DB}?mode=ro", uri=True)
+        rows = conn.execute("SELECT value, ts FROM mru").fetchall()
+        conn.close()
+    except sqlite3.Error:
+        return {}
+    order = {}
+    for i, (value, _ts) in enumerate(sorted(rows, key=lambda r: -r[1])):
+        order[value] = i
+    return order
+
+
 def _emit(rows, query):
     if query:
         q = query.lower()
         rows = [r for r in rows if q in r[0].lower() or q in r[1].lower()]
-    # 状态分组序（_STATUS_RANK，缺省兜底 3），组内 focused 排末位
-    rows.sort(key=lambda r: (_STATUS_RANK.get(r[3], 3),
+    # 排序：状态分组（done/blocked 优先，_STATUS_RANK）→ 组内 MRU（最近使用
+    # 在前，从未用过的垫底）→ focused 排组内末位
+    mru = _mru_order()
+    rows.sort(key=lambda r: (0 if r[3] in ("done", "blocked") else 1,
+                             _STATUS_RANK.get(r[3], 3),
+                             mru.get(r[2], len(mru)),
                              r[0].startswith("* ")))
     for text, subtext, value, _status in rows:
         print(f"{text}\t{subtext}\t{value}")
